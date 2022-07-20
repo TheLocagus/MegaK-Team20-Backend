@@ -1,0 +1,28 @@
+[{
+  "name": "Dominik",
+  "surname": "Brzózka",
+  "courseRating": "4",
+  "activityAndCommitment": "4",
+  "codeRatingInProject": "3",
+  "teamWorkRatingInScrum": "4",
+  "preferredWorkspace": "Biuro",
+  "preferredTown": "Warszawa",
+  "preferredContract": "Umowa o pracę",
+  "expectedSalary": "6000",
+  "agreementForUnpaidPractices": "TAK",
+  "commercialExperience": " 6 miesięcy"
+},
+  {
+    "name": "Ewelina",
+    "surname": "Buba",
+    "courseRating": "3",
+    "activityAndCommitment": "5",
+    "codeRatingInProject": "4",
+    "teamWorkRatingInScrum": "5",
+    "preferredWorkspace": "Dom",
+    "preferredTown": "Lublin",
+    "preferredContract": "Umowa o pracę",
+    "expectedSalary": "8000",
+    "agreementForUnpaidPractices": "NIE",
+    "commercialExperience": "10 miesięcy"
+  }]
