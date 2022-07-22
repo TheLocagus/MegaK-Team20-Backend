@@ -1,5 +1,5 @@
 export class StudentToImportDto {
-  id: string;
+  id?: string;
   email: string;
   courseCompletion: number;
   courseEngagment: number;
