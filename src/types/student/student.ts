@@ -7,7 +7,7 @@ export interface StudentInterface {
     firstName: string;
     lastName: string;
     githubUsername: string;
-    portfolioUrls?: string;
+    portfolioUrls: string;
     projectUrls: string;
     bio: string;
     expectedTypeWork: string;
