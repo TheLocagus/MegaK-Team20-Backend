@@ -15,4 +15,5 @@ export class Admin extends BaseEntity implements AdminInterface {
         length: 128,
     })
     password: string;
+
 }
