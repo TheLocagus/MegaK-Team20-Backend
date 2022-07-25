@@ -37,3 +37,4 @@ lerna-debug.log*
 # Own
 
 config.example.ts
+configMail.ts
