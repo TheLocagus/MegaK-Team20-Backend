@@ -1,5 +1,8 @@
 export interface StudentImportInterface {
-    email: string | object;
+    id: object;
+    email: string;
+    isActive: boolean;
+    registerToken: string;
     courseCompletion: number;
     courseEngagement: number;
     projectDegree: number;

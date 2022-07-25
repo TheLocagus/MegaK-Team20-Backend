@@ -1,5 +1,5 @@
 export interface RecruiterInterface {
-    id: object;
+    id: string;
     email: string;
     fullName: string;
     company: string;

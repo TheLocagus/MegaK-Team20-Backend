@@ -1,3 +1,4 @@
+// config for Windows without password
 export const config = {
   type: 'mysql',
   host: 'localhost',
@@ -8,3 +9,15 @@ export const config = {
   logging: true,
   synchronize: true,
 };
+
+// config for macOS with password
+// export const config = {
+//   type: 'mysql',
+//   host: 'localhost',
+//   port: 8889,
+//   username: 'root',
+//   password: 'root',
+//   database: 'megak_bonus',
+//   logging: true,
+//   synchronize: true,
+// };

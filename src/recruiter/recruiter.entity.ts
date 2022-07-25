@@ -5,8 +5,8 @@ import {RecruiterInterface} from "../types/recruiter";
 @Entity()
 export class Recruiter extends BaseEntity implements RecruiterInterface {
     @PrimaryGeneratedColumn('uuid')
-    @OneToMany(type => Student, student => student.recruiterId)
-    id: Student[];
+    @OneToMany(() => Student, student => student.recruiterId)
+    id: string;
 
     @Column({
         unique: true,

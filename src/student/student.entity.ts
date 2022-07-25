@@ -1,4 +1,11 @@
-import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import {Recruiter} from "../recruiter/recruiter.entity";
 import {StudentInterface} from "../types/student";
 
@@ -36,20 +43,6 @@ export class Student extends BaseEntity implements StudentInterface {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
-    token: string;
-
-    @Column()
-    isActive: boolean;
-
-
-    @Column( {
-        unique: true,
-    })
-    @JoinColumn()
-    email: string;
-
-
     @Column({
         type: "enum",
         enum: UserStatus,
@@ -62,7 +55,7 @@ export class Student extends BaseEntity implements StudentInterface {
     })
     role: UserRole
 
-    @ManyToOne(type => Recruiter, recruiter => recruiter.id)
+    @ManyToOne(() => Recruiter, recruiter => recruiter.id)
     @JoinColumn({name : "recruiterId"})
     recruiterId: Recruiter;
 
@@ -146,6 +139,5 @@ export class Student extends BaseEntity implements StudentInterface {
         default: '',
     })
     courses: string;
-
 
 }

@@ -1,7 +1,5 @@
 export interface StudentInterface {
     id: string;
-    token: string;
-    email: string;
     status: string;
     role: string;
     recruiterId: object;

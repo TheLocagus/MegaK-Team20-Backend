@@ -12,12 +12,22 @@ import {StudentImportInterface} from "../types/student-import";
 @Entity()
 export class StudentImport extends BaseEntity implements StudentImportInterface {
     @PrimaryColumn()
-    @OneToOne( type => Student)
+    @OneToOne(() => Student, student => student.id)
     @JoinColumn({
-        referencedColumnName: 'email',
-        name: 'email',
+        name: 'id',
     })
-    email: Student;
+    id: Student;
+
+    @Column()
+    isActive: boolean;
+
+    @Column()
+    registerToken: string;
+
+    @Column({
+        unique: true,
+    })
+    email: string;
 
     @Column()
     courseCompletion: number;
