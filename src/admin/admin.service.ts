@@ -4,8 +4,9 @@ import { v4 as uuid } from 'uuid';
 import { MailService } from '../mail/mail.service';
 import { registeredStudentInfoEmailTemplate } from '../templates/email/registered-student-info';
 import { AddRecruiterDto } from '../dto/add-recruiter.dto';
-import { StudentImport } from "../student-import/student-import.entity";
-import { Student } from "../student/student.entity";
+import { StudentImport } from '../student-import/student-import.entity';
+import { Student } from '../student/student.entity';
+import { Recruiter } from '../recruiter/recruiter.entity';
 
 @Injectable()
 export class AdminService {
