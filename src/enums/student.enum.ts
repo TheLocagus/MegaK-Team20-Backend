@@ -1,19 +1,14 @@
 export enum StudentTypeOfWorkEnum {
-  'Na miejscu',
-  'Gotowość do przeprowadzki',
-  'Wyłącznie zdalnie',
-  'Hybrydowo',
-  'Bez znaczenia',
+  naMiejscu = 'Na miejscu',
+  gotowoscDoPrzeprowadzki = 'Gotowość do przeprowadzki',
+  wylacznieZdalnie = 'Wyłącznie zdalnie',
+  hybrydowo = 'Hybrydowo',
+  bezZnaczenia = 'Bez znaczenia',
 }
 
 export enum StudentContractTypeEnum {
-  'Tylko UoP',
-  'Możliwe B2B',
-  'Możliwe UZ/UoD',
-  'Brak preferencji',
-}
-
-export enum StudentStatusEnum {
-  'Aktywny',
-  'Nieaktywny',
+  uop = 'Tylko UoP',
+  b2b = 'Możliwe B2B',
+  uzUod = 'Możliwe UZ/UoD',
+  brakPreferencji = 'Brak preferencji',
 }

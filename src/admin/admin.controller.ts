@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { StudentToImportDto } from '../dto/student-to-import.dto';
-import { AddRecruiterDto } from "../dto/add-recruiter.dto";
+import { AddRecruiterDto } from '../dto/add-recruiter.dto';
 
 @Controller('admin')
 export class AdminController {
