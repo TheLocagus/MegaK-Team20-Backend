@@ -13,6 +13,9 @@ export class Recruiter extends BaseEntity implements RecruiterInterface {
     })
     email: string;
 
+    @Column()
+    password: string;
+
     @Column({
         nullable: false,
     })

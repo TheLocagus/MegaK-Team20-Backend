@@ -55,6 +55,9 @@ export class Student extends BaseEntity implements StudentInterface {
     })
     role: UserRole
 
+    @Column()
+    password: string;
+
     @ManyToOne(() => Recruiter, recruiter => recruiter.id)
     @JoinColumn({name : "recruiterId"})
     recruiterId: Recruiter;
