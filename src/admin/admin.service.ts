@@ -4,6 +4,8 @@ import { v4 as uuid } from 'uuid';
 import { MailService } from '../mail/mail.service';
 import { registeredStudentInfoEmailTemplate } from '../templates/email/registered-student-info';
 import { AddRecruiterDto } from '../dto/add-recruiter.dto';
+import { StudentImport } from "../student-import/student-import.entity";
+import { Student } from "../student/student.entity";
 
 @Injectable()
 export class AdminService {
@@ -16,7 +18,7 @@ export class AdminService {
       const token = uuid();
 
       importedStudent.email = student.email;
-      importedStudent.bonusProjectUrls = JSON.stringify(
+      importedStudent.bonusProjectsUrls = JSON.stringify(
         student.bonusProjectUrls,
       );
       importedStudent.courseCompletion = student.courseCompletion;
@@ -24,7 +26,7 @@ export class AdminService {
       importedStudent.projectDegree = student.projectDegree;
       importedStudent.teamProjectDegree = student.teamProjectDegree;
       importedStudent.isActive = false;
-      importedStudent.token = token;
+      importedStudent.registerToken = token;
       await importedStudent.save();
 
       const studentDatas = new Student();
