@@ -2,9 +2,8 @@ import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
   OneToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Student } from '../student/student.entity';
 import { StudentImportInterface } from '../types/student-import';
@@ -14,12 +13,8 @@ export class StudentImport
   extends BaseEntity
   implements StudentImportInterface
 {
-  @PrimaryColumn()
-  @OneToOne(() => Student, (student) => student.id)
-  @JoinColumn({
-    name: 'id',
-  })
-  id: Student;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   isActive: boolean;
@@ -46,4 +41,7 @@ export class StudentImport
 
   @Column()
   bonusProjectsUrls: string;
+
+  @OneToOne(() => Student)
+  student: Student;
 }

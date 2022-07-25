@@ -1,34 +1,37 @@
-import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {Student} from "../student/student.entity";
-import {RecruiterInterface} from "../types/recruiter";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Student } from '../student/student.entity';
+import { RecruiterInterface } from '../types/recruiter';
 
 @Entity()
 export class Recruiter extends BaseEntity implements RecruiterInterface {
-    @PrimaryGeneratedColumn('uuid')
-    @OneToMany(() => Student, student => student.recruiterId)
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  @OneToMany(() => Student, (student) => student.recruiterId)
+  id: string;
 
-    @Column({
-        unique: true,
-    })
-    email: string;
+  @Column({
+    unique: true,
+  })
+  email: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @Column({
-        nullable: false,
-    })
-    fullName: string;
+  @Column({
+    nullable: false,
+  })
+  fullName: string;
 
-    @Column({
-        nullable: false,
-    })
-    company: string;
+  @Column({
+    nullable: false,
+  })
+  company: string;
 
-    @Column()
-    maxReservedStudents: number;
+  @Column()
+  maxReservedStudents: number;
 }
-
-
-

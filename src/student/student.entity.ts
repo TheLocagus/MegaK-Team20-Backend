@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Recruiter } from '../recruiter/recruiter.entity';
 import { StudentInterface } from '../types/student';
+import { StudentImport } from '../student-import/student-import.entity';
 
 export enum UserStatus {
   active = 'active',
@@ -78,7 +80,6 @@ export class Student extends BaseEntity implements StudentInterface {
 
   @Column({
     length: 39,
-    unique: true,
   })
   githubUsername: string;
 
@@ -141,4 +142,8 @@ export class Student extends BaseEntity implements StudentInterface {
     default: '',
   })
   courses: string;
+
+  @OneToOne(() => StudentImport)
+  @JoinColumn()
+  studentImport: StudentImport;
 }
