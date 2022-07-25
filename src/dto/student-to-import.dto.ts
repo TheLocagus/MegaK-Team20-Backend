@@ -5,5 +5,5 @@ export class StudentToImportDto {
   courseEngagment: number;
   projectDegree: number;
   teamProjectDegree: number;
-  bonusProjectUrls: string[];
+  bonusProjectUrls: string;
 }
