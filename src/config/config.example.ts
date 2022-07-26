@@ -2,7 +2,7 @@
 export const config = {
   type: 'mysql',
   host: 'localhost',
-  port: 8889,
+  port: 3306,
   username: 'root',
   password: '',
   database: 'megak_bonus',
