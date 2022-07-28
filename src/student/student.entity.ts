@@ -9,11 +9,10 @@ import {
 } from 'typeorm';
 import { Recruiter } from '../recruiter/recruiter.entity';
 import { StudentInterface } from '../types/student';
-import { StudentImport } from '../student-import/student-import.entity';
+import { StudentImport } from '../studentImport/studentImport.entity';
 
 export enum UserStatus {
   active = 'active',
-  inActive = 'inActive',
   duringTalk = 'duringTalk',
   employed = 'employed',
 }

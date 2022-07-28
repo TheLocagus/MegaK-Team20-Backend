@@ -9,9 +9,9 @@ export const connectionSource = new DataSource({
   password: config.password,
   database: config.database,
   entities: [
-    'dist/**/**/**/**.entity{.ts,.js}',
-    'dist/**/**/**.entity{.ts,.js}',
-    'dist/**/**.entity{.ts,.js}',
+    'dist/**/**/**/*.entity{.ts,.js}',
+    'dist/**/**/*.entity{.ts,.js}',
+    'dist/**/*.entity{.ts,.js}',
   ],
   bigNumberStrings: false,
   logging: config.logging,
