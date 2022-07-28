@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Student } from '../student/student.entity';
-import { AvailableStudentsListResponseInterface } from '../types/student';
+import { AvailableStudentToListResponseInterface } from '../types/student';
 
 @Injectable()
 export class RecruiterService {
@@ -15,10 +15,11 @@ export class RecruiterService {
       .where('studentImport.isActive = :isActive', { isActive: true })
       .getMany();
 
-    const dataToResponse: AvailableStudentsListResponseInterface[] = [];
+    const dataToResponse: AvailableStudentToListResponseInterface[] = [];
 
     for (const infoAboutStudent of infoAboutStudents) {
-      const dataAboutOneStudent: AvailableStudentsListResponseInterface = {
+      const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
+        id: infoAboutStudent.studentImport.id,
         courseCompletion: infoAboutStudent.studentImport.courseCompletion,
         courseEngagment: infoAboutStudent.studentImport.courseEngagement,
         teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
@@ -28,7 +29,6 @@ export class RecruiterService {
         expectedSalary: infoAboutStudent.expectedSalary,
         expectedTypeWork: infoAboutStudent.expectedTypeWork,
         firstName: infoAboutStudent.firstName,
-        githubUsername: infoAboutStudent.githubUsername,
         lastName: `${infoAboutStudent.lastName[0]}.`,
         monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
         targetWorkCity: infoAboutStudent.targetWorkCity,

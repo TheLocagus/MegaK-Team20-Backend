@@ -22,7 +22,8 @@ export interface StudentInterface {
   courses: string;
 }
 
-export interface AvailableStudentsListResponseInterface {
+export interface AvailableStudentToListResponseInterface {
+  id: string;
   status: string;
   firstName: string;
   lastName: string;
@@ -36,5 +37,4 @@ export interface AvailableStudentsListResponseInterface {
   courseEngagment: number;
   projectDegree: number;
   teamProjectDegree: number;
-  githubUsername: string; //need to find avatar from gh
 }
