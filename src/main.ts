@@ -16,6 +16,9 @@ async function bootstrap() {
   // );
   //@TODO odkomentować
   app.use(cookieParser());
+  app.enableCors({
+    credentials: true,
+  });
   await app.listen(3001);
 }
 
