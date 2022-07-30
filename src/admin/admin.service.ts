@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { MailService } from '../mail/mail.service';
 import { registeredStudentInfoEmailTemplate } from '../templates/email/registered-student-info';
-import { AddRecruiterDto } from '../dto/add-recruiter.dto';
+import { AddRecruiterDto } from './dto/add-recruiter.dto';
 import { Recruiter } from '../recruiter/recruiter.entity';
 import { MulterDiskUploadedFiles } from '../interfaces/files';
 import * as fs from 'fs';
@@ -43,14 +43,12 @@ export class AdminService {
       });
 
       for (const student of students) {
-        const importedStudent = new StudentImport();
-        const token = uuid();
-
         const checkEmail = await StudentImport.findOne({
           where: { email: student.email },
         });
-
         if (!checkEmail) {
+          const importedStudent = new StudentImport();
+          const token = uuid();
           importedStudent.email = student.email;
           importedStudent.bonusProjectsUrls = student.bonusProjectUrls;
           importedStudent.courseCompletion = student.courseCompletion;
@@ -91,20 +89,31 @@ export class AdminService {
   }
 
   async importRecruiters(recruiter: AddRecruiterDto) {
-    const importedRecruiter: any = new Recruiter();
-    const token = uuid();
-    //Dodać isActive do rekrutera w bazie danych
-    importedRecruiter.email = recruiter.email;
-    importedRecruiter.fullName = recruiter.fullName;
-    importedRecruiter.company = recruiter.company;
-    importedRecruiter.maxReservedStudents = recruiter.maxReservedStudents;
-    importedRecruiter.isActive = false;
-    await importedRecruiter.save();
+    const checkEmail = await Recruiter.findOne({
+      where: { email: recruiter.email },
+    });
+    if (!checkEmail) {
+      const importedRecruiter = new Recruiter();
+      const token = uuid();
+      //Dodać isActive do rekrutera w bazie danych
+      importedRecruiter.email = recruiter.email;
+      importedRecruiter.fullName = recruiter.fullName;
+      importedRecruiter.company = recruiter.company;
+      importedRecruiter.maxReservedStudents = recruiter.maxReservedStudents;
+      importedRecruiter.isActive = false;
+      await importedRecruiter.save();
 
-    await this.mailService.sendMail(
-      importedRecruiter.email,
-      'Aktywacja konta MegaK Head Hunters',
-      registeredStudentInfoEmailTemplate(importedRecruiter.id, token),
-    );
+      await this.mailService.sendMail(
+        importedRecruiter.email,
+        'Aktywacja konta MegaK Head Hunters',
+        registeredStudentInfoEmailTemplate(importedRecruiter.id, token),
+      );
+      return {
+        success: true,
+        message: 'Recruiter saved successfully',
+      };
+    } else {
+      return { success: false };
+    }
   }
 }
