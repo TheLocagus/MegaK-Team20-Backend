@@ -101,6 +101,7 @@ export class AdminService {
       const token = uuid();
       //Dodać isActive do rekrutera w bazie danych
       importedRecruiter.email = recruiter.email;
+      importedRecruiter.registerToken = token;
       importedRecruiter.fullName = recruiter.fullName;
       importedRecruiter.company = recruiter.company;
       importedRecruiter.maxReservedStudents = recruiter.maxReservedStudents;
