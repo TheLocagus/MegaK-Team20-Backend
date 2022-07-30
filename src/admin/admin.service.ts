@@ -1,53 +1,93 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { StudentToImportDto } from '../dto/student-to-import.dto';
 import { v4 as uuid } from 'uuid';
 import { MailService } from '../mail/mail.service';
 import { registeredStudentInfoEmailTemplate } from '../templates/email/registered-student-info';
 import { AddRecruiterDto } from '../dto/add-recruiter.dto';
-import { StudentImport } from '../studentImport/studentImport.entity';
-import { Student, UserStatus } from '../student/student.entity';
 import { Recruiter } from '../recruiter/recruiter.entity';
+import { MulterDiskUploadedFiles } from '../interfaces/files';
+import * as fs from 'fs';
+import * as path from 'path';
+import { storageDir } from '../utils/storage';
+import { StudentToImportDto } from './dto/student-to-import.dto';
+import { isStudentToImport } from '../utils/is-student-to-import';
+import { StudentImport } from '../studentImport/studentImport.entity';
 
 @Injectable()
 export class AdminService {
   constructor(@Inject(MailService) private mailService: MailService) {}
 
-  async importStudents(students: StudentToImportDto[]) {
-    for (const student of students) {
-      const importedStudent = new StudentImport();
-      const token = uuid();
+  async importStudents(files: MulterDiskUploadedFiles) {
+    const fileProperty = files?.testData?.[0] ?? null;
+    const students: StudentToImportDto[] = [];
 
-      importedStudent.email = student.email;
-      importedStudent.bonusProjectsUrls = JSON.stringify(
-        student.bonusProjectUrls,
+    try {
+      if (
+        fileProperty === null ||
+        fileProperty.mimetype !== 'application/json'
+      ) {
+        throw new Error('No file or file format is different then JSON.');
+      }
+      const data = JSON.parse(
+        fs.readFileSync(
+          path.join(storageDir(), 'students-list', fileProperty.filename),
+          'utf8',
+        ),
       );
-      importedStudent.courseCompletion = student.courseCompletion;
-      importedStudent.courseEngagement = student.courseEngagment;
-      importedStudent.projectDegree = student.projectDegree;
-      importedStudent.teamProjectDegree = student.teamProjectDegree;
-      importedStudent.isActive = true; //true dla testów
-      importedStudent.registerToken = token;
-      await importedStudent.save();
 
-      const studentDatas = new Student(); // w przyszłości do usunięcia
+      data.forEach((element) => {
+        if (isStudentToImport(element)) {
+          students.push(element);
+        } else {
+          throw new Error('File has not proper data');
+        }
+      });
 
-      studentDatas.status = UserStatus.active;
-      studentDatas.firstName = 'Test';
-      studentDatas.lastName = 'Testowy';
-      studentDatas.studentImport = importedStudent;
-      await studentDatas.save();
+      for (const student of students) {
+        const importedStudent = new StudentImport();
+        const token = uuid();
 
-      await this.mailService.sendMail(
-        importedStudent.email,
-        'Aktywacja konta MegaK Head Hunters',
-        registeredStudentInfoEmailTemplate(importedStudent.id, token),
+        const checkEmail = await StudentImport.findOne({
+          where: { email: student.email },
+        });
+
+        if (!checkEmail) {
+          importedStudent.email = student.email;
+          importedStudent.bonusProjectsUrls = student.bonusProjectUrls;
+          importedStudent.courseCompletion = student.courseCompletion;
+          importedStudent.courseEngagement = student.courseEngagment;
+          importedStudent.projectDegree = student.projectDegree;
+          importedStudent.teamProjectDegree = student.teamProjectDegree;
+          importedStudent.isActive = true; //true dla testów
+          importedStudent.registerToken = token;
+          await importedStudent.save();
+
+          await this.mailService.sendMail(
+            importedStudent.email,
+            'Aktywacja konta MegaK Head Hunters',
+            registeredStudentInfoEmailTemplate(importedStudent.id, token),
+          );
+        }
+      }
+
+      fs.unlinkSync(
+        path.join(storageDir(), 'students-list', fileProperty.filename),
       );
+
+      return {
+        success: true,
+        message: 'Importing students finished successfully',
+      };
+    } catch (error) {
+      try {
+        if (fileProperty) {
+          fs.unlinkSync(
+            path.join(storageDir(), 'students-list', fileProperty.filename),
+          );
+        }
+      } catch (subError) {}
+
+      throw error;
     }
-
-    return {
-      success: true,
-      message: 'Importing students finished successfully',
-    };
   }
 
   async importRecruiters(recruiter: AddRecruiterDto) {
