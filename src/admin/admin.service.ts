@@ -8,7 +8,7 @@ import { MulterDiskUploadedFiles } from '../interfaces/files';
 import * as fs from 'fs';
 import * as path from 'path';
 import { storageDir } from '../utils/storage';
-import { StudentToImportDto } from './dto/student-to-import.dto';
+import { StudentToImport } from '../interfaces/student-to-import';
 import { isStudentToImport } from '../utils/is-student-to-import';
 import { StudentImport } from '../studentImport/studentImport.entity';
 
@@ -18,7 +18,7 @@ export class AdminService {
 
   async importStudents(files: MulterDiskUploadedFiles) {
     const fileProperty = files?.testData?.[0] ?? null;
-    const students: StudentToImportDto[] = [];
+    const students: StudentToImport[] = [];
 
     try {
       if (
@@ -62,7 +62,11 @@ export class AdminService {
           await this.mailService.sendMail(
             importedStudent.email,
             'Aktywacja konta MegaK Head Hunters',
-            registeredStudentInfoEmailTemplate(importedStudent.id, token),
+            registeredStudentInfoEmailTemplate(
+              importedStudent.id,
+              token,
+              'Kursancie',
+            ),
           );
         }
       }
@@ -106,7 +110,11 @@ export class AdminService {
       await this.mailService.sendMail(
         importedRecruiter.email,
         'Aktywacja konta MegaK Head Hunters',
-        registeredStudentInfoEmailTemplate(importedRecruiter.id, token),
+        registeredStudentInfoEmailTemplate(
+          importedRecruiter.id,
+          token,
+          'Rekruterze',
+        ),
       );
       return {
         success: true,

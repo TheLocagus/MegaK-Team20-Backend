@@ -1,7 +1,7 @@
-import { StudentToImportDto } from '../admin/dto/student-to-import.dto';
+import { StudentToImport } from '../interfaces/student-to-import';
 import { isEmail, Max, Min } from 'class-validator';
 
-export const isStudentToImport = (arg: any): arg is StudentToImportDto => {
+export const isStudentToImport = (arg: any): arg is StudentToImport => {
   if (
     !(arg && arg.email && typeof (arg.email === 'string') && isEmail(arg.email))
   ) {
