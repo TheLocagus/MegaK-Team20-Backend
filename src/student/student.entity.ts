@@ -17,12 +17,6 @@ export enum UserStatus {
   employed = 'employed',
 }
 
-export enum UserRole {
-  admin = 'admin',
-  student = 'student',
-  recruiter = 'recruiter',
-}
-
 export enum TypeWork {
   stationary = 'stationary',
   readyToMove = 'readyToMove',
@@ -50,13 +44,15 @@ export class Student extends BaseEntity implements StudentInterface {
   status: UserStatus;
 
   @Column({
-    type: 'enum',
-    enum: UserRole,
+    nullable: false,
   })
-  role: UserRole;
+  pwdHash: string;
 
-  @Column()
-  password: string;
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  currentTokenId: string | null;
 
   @ManyToOne(() => Recruiter, (recruiter) => recruiter.id)
   @JoinColumn({ name: 'recruiterId' })
@@ -69,16 +65,19 @@ export class Student extends BaseEntity implements StudentInterface {
 
   @Column({
     length: 20,
+    nullable: false,
   })
   firstName: string;
 
   @Column({
     length: 27,
+    nullable: false,
   })
   lastName: string;
 
   @Column({
     length: 39,
+    nullable: false,
   })
   githubUsername: string;
 
@@ -87,7 +86,9 @@ export class Student extends BaseEntity implements StudentInterface {
   })
   portfolioUrls: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   projectUrls: string;
 
   @Column({
@@ -113,6 +114,7 @@ export class Student extends BaseEntity implements StudentInterface {
   expectedContractType: ContractType;
 
   @Column({
+    default: 0,
     length: 6,
   })
   expectedSalary: string;
@@ -132,13 +134,11 @@ export class Student extends BaseEntity implements StudentInterface {
 
   @Column({
     type: 'longtext',
-    default: '',
   })
   workExperience: string;
 
   @Column({
     type: 'longtext',
-    default: '',
   })
   courses: string;
 

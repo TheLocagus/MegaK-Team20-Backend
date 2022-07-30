@@ -35,6 +35,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # Own
-
-config.example.ts
-configMail.ts
+src/config/configMail.ts

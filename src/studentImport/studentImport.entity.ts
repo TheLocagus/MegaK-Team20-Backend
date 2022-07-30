@@ -16,30 +16,53 @@ export class StudentImport
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   isActive: boolean;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   registerToken: string;
 
   @Column({
+    nullable: false,
     unique: true,
   })
   email: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+    type: 'tinyint',
+    unsigned: true,
+  })
   courseCompletion: number;
 
-  @Column()
+  @Column({
+    nullable: false,
+    type: 'tinyint',
+    unsigned: true,
+  })
   courseEngagement: number;
 
-  @Column()
+  @Column({
+    nullable: false,
+    type: 'tinyint',
+    unsigned: true,
+  })
   projectDegree: number;
 
-  @Column()
+  @Column({
+    nullable: false,
+    type: 'tinyint',
+    unsigned: true,
+  })
   teamProjectDegree: number;
 
-  @Column()
+  @Column({
+    nullable: false,
+  })
   bonusProjectsUrls: string;
 
   @OneToOne(() => Student)

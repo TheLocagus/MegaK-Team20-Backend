@@ -5,7 +5,7 @@ import { MailService } from '../mail/mail.service';
 import { registeredStudentInfoEmailTemplate } from '../templates/email/registered-student-info';
 import { AddRecruiterDto } from '../dto/add-recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
-import { Student, UserRole, UserStatus } from '../student/student.entity';
+import { Student, UserStatus } from '../student/student.entity';
 import { Recruiter } from '../recruiter/recruiter.entity';
 
 @Injectable()
@@ -31,7 +31,6 @@ export class AdminService {
 
       const studentDatas = new Student(); // w przyszłości do usunięcia
 
-      studentDatas.role = UserRole.student;
       studentDatas.status = UserStatus.active;
       studentDatas.firstName = 'Test';
       studentDatas.lastName = 'Testowy';
