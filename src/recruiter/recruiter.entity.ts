@@ -15,12 +15,24 @@ export class Recruiter extends BaseEntity implements RecruiterInterface {
   id: string;
 
   @Column({
+    nullable: false,
+  })
+  isActive: boolean;
+
+  @Column({
+    nullable: false,
     unique: true,
   })
   email: string;
 
   @Column()
-  password: string;
+  pwdHash: string;
+
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  currentTokenId: string | null;
 
   @Column({
     nullable: false,
@@ -32,6 +44,10 @@ export class Recruiter extends BaseEntity implements RecruiterInterface {
   })
   company: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+    type: 'smallint',
+    unsigned: true,
+  })
   maxReservedStudents: number;
 }

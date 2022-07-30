@@ -1,8 +1,6 @@
 export interface StudentInterface {
   id: string;
   status: string;
-  role: string;
-  password: string;
   recruiterId: object;
   telephone: string;
   firstName: string;

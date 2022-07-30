@@ -9,10 +9,14 @@ export class Admin extends BaseEntity implements AdminInterface {
   @Column({
     length: 128,
   })
-  login: string;
+  email: string;
+
+  @Column()
+  pwdHash: string;
 
   @Column({
-    length: 128,
+    nullable: true,
+    default: null,
   })
-  password: string;
+  currentTokenId: string | null;
 }
