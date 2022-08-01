@@ -50,4 +50,9 @@ export class Recruiter extends BaseEntity implements RecruiterInterface {
     unsigned: true,
   })
   maxReservedStudents: number;
+
+  @Column({
+    default: null,
+  })
+  registerToken: string | null;
 }

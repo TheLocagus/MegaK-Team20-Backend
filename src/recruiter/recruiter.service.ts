@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Student } from '../student/student.entity';
 import { AvailableStudentToListResponseInterface } from '../types/student';
+import { Recruiter } from './recruiter.entity';
 
 @Injectable()
 export class RecruiterService {
@@ -37,5 +38,23 @@ export class RecruiterService {
       dataToResponse.push(dataAboutOneStudent);
     }
     return dataToResponse;
+  }
+
+  async getOneRecruiterAndCompareToken(id: string, registerToken: string) {
+    const oneRecruiter = await this.dataSource
+      .getRepository(Recruiter)
+      .createQueryBuilder('recruiter')
+      .where('recruiter.id = :id', {id})
+      .andWhere('recruiter.registerToken = :registerToken', {registerToken})
+      .getOne();
+
+      return oneRecruiter ? {
+        isOk: true,
+        id: oneRecruiter.id,
+        role: 'Recruiter',
+
+      } : {
+        isOk: false,
+      };
   }
 }
