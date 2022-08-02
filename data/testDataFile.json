@@ -1,10 +1,10 @@
 [
   {
     "email": "louisebaker@vantage.com",
-    "courseCompletion": 1,
-    "courseEngagment": 4,
-    "projectDegree": 2,
-    "teamProjectDegree": 2,
+    "courseCompletion": 5,
+    "courseEngagment": 5,
+    "projectDegree": 5,
+    "teamProjectDegree": 5,
     "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
   },
   {

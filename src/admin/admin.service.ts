@@ -72,6 +72,19 @@ export class AdminService {
               'Kursancie',
             ),
           );
+        } else {
+          await this.dataSource
+            .createQueryBuilder()
+            .update(StudentImport)
+            .set({
+              bonusProjectsUrls: student.bonusProjectUrls,
+              courseCompletion: student.courseCompletion,
+              courseEngagement: student.courseEngagment,
+              projectDegree: student.projectDegree,
+              teamProjectDegree: student.teamProjectDegree,
+            })
+            .where('email = :email', { email: student.email })
+            .execute();
         }
       }
 
