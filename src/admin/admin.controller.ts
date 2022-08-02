@@ -6,7 +6,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { AddRecruiterDto } from '../dto/add-recruiter.dto';
+import { AddRecruiterDto } from './dto/add-recruiter.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { storageDir } from '../utils/storage';
 import * as path from 'path';
