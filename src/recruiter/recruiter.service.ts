@@ -87,7 +87,7 @@ export class RecruiterService {
           break;
         }
         case 'employed': {
-          foundStudent.status = null;
+          foundStudent.status = UserStatus.employed;
           foundStudentImport.isActive = false;
           await foundStudent.save();
           await foundStudentImport.save();
