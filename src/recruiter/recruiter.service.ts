@@ -1,8 +1,9 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { Student } from '../student/student.entity';
+import { Student, UserStatus } from '../student/student.entity';
 import { AvailableStudentToListResponseInterface } from '../types/student';
 import { Recruiter } from './recruiter.entity';
+import { StudentImport } from '../studentImport/studentImport.entity';
 
 @Injectable()
 export class RecruiterService {
@@ -44,17 +45,67 @@ export class RecruiterService {
     const oneRecruiter = await this.dataSource
       .getRepository(Recruiter)
       .createQueryBuilder('recruiter')
-      .where('recruiter.id = :id', {id})
-      .andWhere('recruiter.registerToken = :registerToken', {registerToken})
+      .where('recruiter.id = :id', { id })
+      .andWhere('recruiter.registerToken = :registerToken', { registerToken })
       .getOne();
 
-      return oneRecruiter ? {
-        isOk: true,
-        id: oneRecruiter.id,
-        role: 'Recruiter',
+    return oneRecruiter
+      ? {
+          isOk: true,
+          id: oneRecruiter.id,
+          role: 'Recruiter',
+        }
+      : {
+          isOk: false,
+        };
+  }
 
-      } : {
-        isOk: false,
+  async changeStatus(id: string, status: string) {
+    //@TODO wysyłanie informacji do admina, ewentualna zmiana nazewnictwa w case'ach, lepsza walidacja błędów
+    const foundStudentImport = await StudentImport.findOne({
+      where: { id },
+    });
+    const foundStudent = await Student.findOne({
+      where: {
+        studentImport: {
+          id,
+        },
+      },
+    });
+
+    try {
+      switch (status) {
+        case 'duringTalk': {
+          foundStudent.status = UserStatus.duringTalk;
+          await foundStudent.save();
+          break;
+        }
+        case 'noInterested': {
+          foundStudent.status = UserStatus.active;
+          await foundStudent.save();
+          break;
+        }
+        case 'employed': {
+          foundStudent.status = null;
+          foundStudentImport.isActive = false;
+          await foundStudent.save();
+          await foundStudentImport.save();
+
+          //@TODO wysłanie informacji do admina
+          break;
+        }
+        default: {
+          throw new Error('Something went wrong.');
+        }
+      }
+      return {
+        message: 'Status changed correctly',
+        status: 'Ok',
       };
+    } catch (e) {
+      return {
+        message: 'Something went wrong. Try again later.',
+      };
+    }
   }
 }

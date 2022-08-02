@@ -28,8 +28,6 @@ export class Recruiter extends BaseEntity implements RecruiterInterface {
   @Column({
     default: null,
   })
-  registerToken: string;
-
   @Column({
     default: null,
   })
