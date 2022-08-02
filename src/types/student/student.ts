@@ -36,3 +36,21 @@ export interface AvailableStudentToListResponseInterface {
   projectDegree: number;
   teamProjectDegree: number;
 }
+
+export interface DuringTalkStudentToListResponseInterface {
+  id: string;
+  firstName: string;
+  lastName: string;
+  expectedTypeWork: string;
+  targetWorkCity: string;
+  expectedContractType: string;
+  expectedSalary: string;
+  canTakeApprenticeship: boolean;
+  monthsOfCommercialExp: number;
+  courseCompletion: number;
+  courseEngagment: number;
+  projectDegree: number;
+  teamProjectDegree: number;
+  githubUsername: string;
+  //@TODO brakuje w bazie danych pola do określenia czasu rezerwacji
+}

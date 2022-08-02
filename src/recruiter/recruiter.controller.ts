@@ -10,6 +10,11 @@ export class RecruiterController {
     return this.recruiterService.getAllStudents();
   }
 
+  @Get('/for-interview')
+  getDuringTalkStudents() {
+    return this.recruiterService.getDuringTalkStudents();
+  }
+
   @Post('/register/:id/:registerToken')
   getOneRecruiterAndCompareToken(
     @Param('id') id: string,

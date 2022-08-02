@@ -1,7 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
-import { AvailableStudentToListResponseInterface } from '../types/student';
+import {
+  AvailableStudentToListResponseInterface,
+  DuringTalkStudentToListResponseInterface,
+} from '../types/student';
 import { Recruiter } from './recruiter.entity';
 import { StudentImport } from '../studentImport/studentImport.entity';
 
@@ -108,5 +111,37 @@ export class RecruiterService {
         message: 'Something went wrong. Try again later.',
       };
     }
+  }
+
+  async getDuringTalkStudents() {
+    const students = await this.dataSource
+      .getRepository(Student)
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .where('student.status = :status', { status: UserStatus.duringTalk })
+      .getMany();
+
+    const dataToResponse: DuringTalkStudentToListResponseInterface[] = [];
+
+    for (const student of students) {
+      const studentInfo: DuringTalkStudentToListResponseInterface = {
+        id: student.studentImport.id,
+        courseCompletion: student.studentImport.courseCompletion,
+        courseEngagment: student.studentImport.courseEngagement,
+        projectDegree: student.studentImport.projectDegree,
+        teamProjectDegree: student.studentImport.teamProjectDegree,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        githubUsername: student.githubUsername,
+        targetWorkCity: student.targetWorkCity,
+        expectedTypeWork: student.expectedTypeWork,
+        expectedSalary: student.expectedSalary,
+        expectedContractType: student.expectedContractType,
+        monthsOfCommercialExp: student.monthsOfCommercialExp,
+        canTakeApprenticeship: student.canTakeApprenticeship,
+      };
+      dataToResponse.push(studentInfo);
+    }
+    return dataToResponse;
   }
 }
