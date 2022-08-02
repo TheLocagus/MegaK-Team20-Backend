@@ -62,6 +62,7 @@ export class RecruiterService {
 
   async changeStatus(id: string, status: string) {
     //@TODO wysyłanie informacji do admina, ewentualna zmiana nazewnictwa w case'ach, lepsza walidacja błędów
+    //@TODO upewnienie się, że rekruter po wpisaniu w ściężkę id innego studenta niż ma w dodanych dostanie informację o braku dostępu
     const foundStudentImport = await StudentImport.findOne({
       where: { id },
     });
