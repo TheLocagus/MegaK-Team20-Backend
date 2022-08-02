@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { MailService } from '../mail/mail.service';
 import { registeredStudentInfoEmailTemplate } from '../templates/email/registered-student-info';
@@ -11,10 +11,14 @@ import { storageDir } from '../utils/storage';
 import { StudentToImport } from '../interfaces/student-to-import';
 import { isStudentToImport } from '../utils/is-student-to-import';
 import { StudentImport } from '../studentImport/studentImport.entity';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class AdminService {
-  constructor(@Inject(MailService) private mailService: MailService) {}
+  constructor(
+    @Inject(MailService) private mailService: MailService,
+    @Inject(forwardRef(() => DataSource)) private dataSource: DataSource,
+  ) {}
 
   async importStudents(files: MulterDiskUploadedFiles) {
     const fileProperty = files?.testData?.[0] ?? null;
@@ -93,10 +97,10 @@ export class AdminService {
   }
 
   async importRecruiters(recruiter: AddRecruiterDto) {
-    const checkEmail = await Recruiter.findOne({
+    const recruiterFromDB = await Recruiter.findOne({
       where: { email: recruiter.email },
     });
-    if (!checkEmail) {
+    if (!recruiterFromDB) {
       const importedRecruiter = new Recruiter();
       const token = uuid();
       //Dodać isActive do rekrutera w bazie danych
@@ -122,7 +126,20 @@ export class AdminService {
         message: 'Recruiter saved successfully',
       };
     } else {
-      return { success: false };
+      await this.dataSource
+        .createQueryBuilder()
+        .update(Recruiter)
+        .set({
+          fullName: recruiter.fullName,
+          company: recruiter.company,
+          maxReservedStudents: recruiter.maxReservedStudents,
+        })
+        .where('email = :email', { email: recruiter.email })
+        .execute();
+      return {
+        success: true,
+        message: 'Recruiter modified',
+      };
     }
   }
 }
