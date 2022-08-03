@@ -66,9 +66,7 @@ export class RecruiterService {
   async changeStatus(id: string, status: string) {
     //@TODO ewentualna zmiana nazewnictwa w case'ach
     //@TODO lepsza walidacja błędów
-    const foundStudentImport = await StudentImport.findOne({
-      where: { id },
-    });
+
     const foundStudent = await Student.findOne({
       where: {
         studentImport: {
@@ -89,15 +87,20 @@ export class RecruiterService {
           break;
         }
         case 'noInterested': {
+          foundStudent.endOfReservation
+            ? (foundStudent.endOfReservation = null)
+            : null;
           foundStudent.status = UserStatus.active;
           await foundStudent.save();
           break;
         }
         case 'employed': {
-          foundStudent.status = null;
-          foundStudentImport.isActive = false;
+          foundStudent.status = UserStatus.employed;
+          foundStudent.endOfReservation
+            ? (foundStudent.endOfReservation = null)
+            : null;
+          //@TODO tu jest ok, natomiast żeby cała funkcjonalność działała, kursant musi samodzielnie potwierdzić w profilu że został zatrudniony
           await foundStudent.save();
-          await foundStudentImport.save();
           break;
         }
         default: {
