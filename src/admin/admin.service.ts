@@ -12,7 +12,6 @@ import { StudentToImport } from '../interfaces/student-to-import';
 import { isStudentToImport } from '../utils/is-student-to-import';
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { DataSource } from 'typeorm';
-import { readFile } from '../utils/read-file';
 
 @Injectable()
 export class AdminService {
@@ -33,8 +32,9 @@ export class AdminService {
         throw new Error('No file or file format is different then JSON.');
       }
       const data = JSON.parse(
-        await readFile(
+        await fs.readFile(
           path.join(storageDir(), 'students-list', fileProperty.filename),
+          'utf-8',
         ),
       );
 
