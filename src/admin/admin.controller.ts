@@ -11,6 +11,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { storageDir } from '../utils/storage';
 import * as path from 'path';
 import { MulterDiskUploadedFiles } from '../interfaces/files';
+import { StudentToImport } from '../interfaces/student-to-import';
 
 @Controller('admin')
 export class AdminController {
@@ -35,5 +36,11 @@ export class AdminController {
   @Post('/import-recruiters')
   importRecruiters(@Body() recruitersToImport: AddRecruiterDto) {
     return this.adminService.importRecruiters(recruitersToImport);
+  }
+
+  //develop stuff @TODO usunąć przy merge'u do maina całe addStudents
+  @Post('/add-students')
+  addStudents(@Body() students: StudentToImport[]) {
+    return this.adminService.addStudents(students);
   }
 }
