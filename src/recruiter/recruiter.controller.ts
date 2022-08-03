@@ -11,8 +11,8 @@ export class RecruiterController {
   }
 
   @Get('/for-interview')
-  getDuringTalkStudents() {
-    return this.recruiterService.getDuringTalkStudents();
+  getForInterviewStudents() {
+    return this.recruiterService.getForInterviewStudents();
   }
 
   @Post('/register/:id/:registerToken')

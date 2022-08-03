@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
 import {
   AvailableStudentToListResponseInterface,
-  DuringTalkStudentToListResponseInterface,
+  ForInterviewStudentToListResponseInterface,
 } from '../types/student';
 import { Recruiter } from './recruiter.entity';
 import { StudentImport } from '../studentImport/studentImport.entity';
@@ -64,8 +64,8 @@ export class RecruiterService {
   }
 
   async changeStatus(id: string, status: string) {
-    //@TODO wysyłanie informacji do admina, ewentualna zmiana nazewnictwa w case'ach, lepsza walidacja błędów
-    //@TODO upewnienie się, że rekruter po wpisaniu w ściężkę id innego studenta niż ma w dodanych dostanie informację o braku dostępu
+    //@TODO ewentualna zmiana nazewnictwa w case'ach
+    //@TODO lepsza walidacja błędów
     const foundStudentImport = await StudentImport.findOne({
       where: { id },
     });
@@ -94,8 +94,6 @@ export class RecruiterService {
           foundStudentImport.isActive = false;
           await foundStudent.save();
           await foundStudentImport.save();
-
-          //@TODO wysłanie informacji do admina
           break;
         }
         default: {
@@ -113,7 +111,7 @@ export class RecruiterService {
     }
   }
 
-  async getDuringTalkStudents() {
+  async getForInterviewStudents() {
     const students = await this.dataSource
       .getRepository(Student)
       .createQueryBuilder('student')
@@ -121,10 +119,10 @@ export class RecruiterService {
       .where('student.status = :status', { status: UserStatus.duringTalk })
       .getMany();
 
-    const dataToResponse: DuringTalkStudentToListResponseInterface[] = [];
+    const dataToResponse: ForInterviewStudentToListResponseInterface[] = [];
 
     for (const student of students) {
-      const studentInfo: DuringTalkStudentToListResponseInterface = {
+      const studentInfo: ForInterviewStudentToListResponseInterface = {
         id: student.studentImport.id,
         courseCompletion: student.studentImport.courseCompletion,
         courseEngagment: student.studentImport.courseEngagement,
