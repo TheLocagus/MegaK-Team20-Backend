@@ -32,7 +32,31 @@ export interface AvailableStudentToListResponseInterface {
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;
   courseCompletion: number;
-  courseEngagment: number;
+  courseEngagement: number;
   projectDegree: number;
   teamProjectDegree: number;
+}
+export interface StudentCvInterface {
+  avatar: string
+  firstName: string;
+  lastName: string;
+  bio: string;
+  githubUsername: string;
+  courseCompletion: number;
+  courseEngagement: number;
+  projectDegree: number;
+  teamProjectDegree: number;
+  bonusProjectUrls: string;
+  projectUrls: string;
+  portfolioUrls: string | null;
+  ownCodeInTeam: string;
+  codeReviewUrls: string;
+  expectedTypeWork: string;
+  targetWorkCity: string;
+  expectedContractType: string;
+  expectedSalary: string;
+  canTakeApprenticeship: boolean;
+  monthsOfCommercialExp: number;
+  education: string;
+  workExperience: string;
 }
