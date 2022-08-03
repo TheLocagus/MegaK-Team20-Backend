@@ -147,5 +147,11 @@ export class Student extends BaseEntity implements StudentInterface {
   studentImport: StudentImport;
 
   @Column()
-  avatar: string;
+  avatar: string | null;
+
+  @Column()
+  ownCodeInTeamUrls: string | null;
+
+  @Column()
+  codeReviewUrls: string | null;
 }
