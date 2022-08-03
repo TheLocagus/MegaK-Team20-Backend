@@ -37,10 +37,4 @@ export class AdminController {
   importRecruiters(@Body() recruitersToImport: AddRecruiterDto) {
     return this.adminService.importRecruiters(recruitersToImport);
   }
-
-  //develop stuff @TODO usunąć przy merge'u do maina całe addStudents
-  @Post('/add-students')
-  addStudents(@Body() students: StudentToImport[]) {
-    return this.adminService.addStudents(students);
-  }
 }

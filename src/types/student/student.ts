@@ -37,7 +37,7 @@ export interface AvailableStudentToListResponseInterface {
   teamProjectDegree: number;
 }
 
-export interface DuringTalkStudentToListResponseInterface {
+export interface ForInterviewStudentToListResponseInterface {
   id: string;
   firstName: string;
   lastName: string;

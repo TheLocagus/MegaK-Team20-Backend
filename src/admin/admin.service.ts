@@ -155,49 +155,4 @@ export class AdminService {
       };
     }
   }
-
-  async addStudents(students: StudentToImport[]) {
-    for (const student of students) {
-      const studentImport = await StudentImport.findOne({
-        where: { email: student.email },
-      });
-      if (!studentImport) {
-        const importedStudent = new StudentImport();
-        const token = uuid();
-        //Dodać isActive do rekrutera w bazie danych
-        importedStudent.email = student.email;
-        importedStudent.bonusProjectsUrls = student.bonusProjectUrls;
-        importedStudent.courseCompletion = student.courseCompletion;
-        importedStudent.courseEngagement = student.courseEngagment;
-        importedStudent.projectDegree = student.projectDegree;
-        importedStudent.teamProjectDegree = student.teamProjectDegree;
-        importedStudent.isActive = true; //true dla testów
-        importedStudent.registerToken = token;
-        await importedStudent.save();
-
-        await this.mailService.sendMail(
-          importedStudent.email,
-          'Aktywacja konta MegaK Head Hunters',
-          registeredStudentInfoEmailTemplate(
-            importedStudent.id,
-            token,
-            'Kursancie',
-          ),
-        );
-      } else {
-        await this.dataSource
-          .createQueryBuilder()
-          .update(StudentImport)
-          .set({
-            bonusProjectsUrls: student.bonusProjectUrls,
-            courseCompletion: student.courseCompletion,
-            courseEngagement: student.courseEngagment,
-            projectDegree: student.projectDegree,
-            teamProjectDegree: student.teamProjectDegree,
-          })
-          .where('email = :email', { email: student.email })
-          .execute();
-      }
-    }
-  }
 }
