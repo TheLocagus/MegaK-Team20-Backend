@@ -18,6 +18,7 @@ export interface StudentInterface {
   education: string;
   workExperience: string;
   courses: string;
+  endOfReservation: Date | null;
 }
 
 export interface AvailableStudentToListResponseInterface {
@@ -52,5 +53,5 @@ export interface ForInterviewStudentToListResponseInterface {
   projectDegree: number;
   teamProjectDegree: number;
   githubUsername: string;
-  //@TODO brakuje w bazie danych pola do określenia czasu rezerwacji
+  endOfReservation: Date;
 }

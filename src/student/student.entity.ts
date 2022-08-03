@@ -145,4 +145,10 @@ export class Student extends BaseEntity implements StudentInterface {
   @OneToOne(() => StudentImport)
   @JoinColumn()
   studentImport: StudentImport;
+
+  @Column({
+    type: 'datetime',
+    default: null,
+  })
+  endOfReservation: Date | null;
 }
