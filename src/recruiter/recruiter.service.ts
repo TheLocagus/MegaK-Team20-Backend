@@ -80,6 +80,10 @@ export class RecruiterService {
     try {
       switch (status) {
         case 'duringTalk': {
+          const reservationTimestamp =
+            new Date().getTime() + 10 * 24 * 60 * 60 * 1000;
+
+          foundStudent.endOfReservation = new Date(reservationTimestamp);
           foundStudent.status = UserStatus.duringTalk;
           await foundStudent.save();
           break;
@@ -137,6 +141,7 @@ export class RecruiterService {
         expectedContractType: student.expectedContractType,
         monthsOfCommercialExp: student.monthsOfCommercialExp,
         canTakeApprenticeship: student.canTakeApprenticeship,
+        endOfReservation: student.endOfReservation,
       };
       dataToResponse.push(studentInfo);
     }
