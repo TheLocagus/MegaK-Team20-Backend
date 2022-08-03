@@ -8,13 +8,13 @@ export const isStudentToImport = (arg: any): arg is StudentToImport => {
   if (!(Min(arg.courseCompletion) && Max(arg.courseCompletion))) {
     return false;
   }
-  if (!(Min(arg.courseCompletion) && Max(arg.courseCompletion))) {
+  if (!(Min(arg.courseEngagment) && Max(arg.courseEngagment))) {
     return false;
   }
-  if (!(Min(arg.courseCompletion) && Max(arg.courseCompletion))) {
+  if (!(Min(arg.projectDegree) && Max(arg.projectDegree))) {
     return false;
   }
-  if (!(Min(arg.courseCompletion) && Max(arg.courseCompletion))) {
+  if (!(Min(arg.teamProjectDegree) && Max(arg.teamProjectDegree))) {
     return false;
   } else {
     try {
@@ -25,4 +25,5 @@ export const isStudentToImport = (arg: any): arg is StudentToImport => {
       return false;
     }
   }
+  return true;
 };
