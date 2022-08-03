@@ -10,6 +10,7 @@ import { v4 as uuid } from 'uuid';
 import { JwtPayload } from './strategy/admin.strategy';
 import { sign } from 'jsonwebtoken';
 import { configCookie } from '../config/configCookie.example';
+import { salt } from '../config/config-salt';
 
 @Injectable()
 export class AuthService {
@@ -106,11 +107,7 @@ export class AuthService {
   } {
     const payload: JwtPayload = { id: currentTokenId };
     const expiresIn = 60 * 60 * 24;
-    const accessToken = sign(
-      payload,
-      'jfhsjkfhkjsf878947289378978*&(*&*(&YUHJJBHGI&#Y78937893oUO*#UIOU#*U#*U*(#UOIJJhuHUH#iuhU*#&*(&#*(&#*&',
-      { expiresIn },
-    );
+    const accessToken = sign(payload, salt, { expiresIn });
     return {
       accessToken,
       expiresIn,
