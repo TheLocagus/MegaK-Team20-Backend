@@ -5,7 +5,7 @@ import { registeredStudentInfoEmailTemplate } from '../templates/email/registere
 import { AddRecruiterDto } from './dto/add-recruiter.dto';
 import { Recruiter } from '../recruiter/recruiter.entity';
 import { MulterDiskUploadedFiles } from '../interfaces/files';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import * as path from 'path';
 import { storageDir } from '../utils/storage';
 import { StudentToImport } from '../interfaces/student-to-import';
@@ -32,9 +32,9 @@ export class AdminService {
         throw new Error('No file or file format is different then JSON.');
       }
       const data = JSON.parse(
-        fs.readFileSync(
+        await fs.readFile(
           path.join(storageDir(), 'students-list', fileProperty.filename),
-          'utf8',
+          'utf-8',
         ),
       );
 
@@ -88,7 +88,7 @@ export class AdminService {
         }
       }
 
-      fs.unlinkSync(
+      await fs.unlink(
         path.join(storageDir(), 'students-list', fileProperty.filename),
       );
 
@@ -99,7 +99,7 @@ export class AdminService {
     } catch (error) {
       try {
         if (fileProperty) {
-          fs.unlinkSync(
+          await fs.unlink(
             path.join(storageDir(), 'students-list', fileProperty.filename),
           );
         }

@@ -10,6 +10,7 @@ import { v4 as uuid } from 'uuid';
 import { JwtPayload } from './strategy/admin.strategy';
 import { sign } from 'jsonwebtoken';
 import { configCookie } from '../config/configCookie.example';
+import { salt } from '../config/config-salt';
 
 @Injectable()
 export class AuthService {
@@ -26,41 +27,37 @@ export class AuthService {
           pwdHash: hashPwd(req.pwd),
         },
       });
-      if (!admin) {
-        const student = await this.dataSource
-          .getRepository(Student)
-          .createQueryBuilder('student')
-          .leftJoinAndSelect('student.studentImport', 'studentImport')
-          .where('studentImport.email = :email', {
-            email: req.email,
-          })
-          .andWhere('student.pwdHash = :pwdHash', {
-            pwdHash: hashPwd(req.pwd),
-          })
-          .andWhere('studentImport.isActive = :active', {
-            active: true,
-          })
-          .getOne();
-        if (!student) {
-          const recruiter = await Recruiter.findOne({
-            where: {
-              email: req.email,
-              pwdHash: hashPwd(req.pwd),
-              isActive: true,
-            },
-          });
-          if (!recruiter) {
-            return res.json({
-              error: 'Invalid login data or account not active!',
-            });
-          } else {
-            user = recruiter;
-          }
-        } else {
-          user = student;
-        }
-      } else {
+      if (admin) {
         user = admin;
+      } else {
+        const recruiter = await Recruiter.findOne({
+          where: {
+            email: req.email,
+            pwdHash: hashPwd(req.pwd),
+            isActive: true,
+          },
+        });
+        if (recruiter) {
+          user = recruiter;
+        } else {
+          const student = await this.dataSource
+            .getRepository(Student)
+            .createQueryBuilder('student')
+            .leftJoinAndSelect('student.studentImport', 'studentImport')
+            .where('studentImport.email = :email', {
+              email: req.email,
+            })
+            .andWhere('student.pwdHash = :pwdHash', {
+              pwdHash: hashPwd(req.pwd),
+            })
+            .andWhere('student.isActive = :isActive', {
+              isActive: true,
+            })
+            .getOne();
+          if (student) {
+            user = student;
+          }
+        }
       }
 
       if (!user) {
@@ -106,11 +103,7 @@ export class AuthService {
   } {
     const payload: JwtPayload = { id: currentTokenId };
     const expiresIn = 60 * 60 * 24;
-    const accessToken = sign(
-      payload,
-      'jfhsjkfhkjsf878947289378978*&(*&*(&YUHJJBHGI&#Y78937893oUO*#UIOU#*U#*U*(#UOIJJhuHUH#iuhU*#&*(&#*(&#*&',
-      { expiresIn },
-    );
+    const accessToken = sign(payload, salt, { expiresIn });
     return {
       accessToken,
       expiresIn,

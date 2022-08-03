@@ -2,6 +2,7 @@ import { Strategy } from 'passport-jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Admin } from '../../admin/admin.entity';
+import { salt } from '../../config/config-salt';
 
 export interface JwtPayload {
   id: string;
@@ -16,8 +17,7 @@ export class AdminStrategy extends PassportStrategy(Strategy, 'admin') {
   constructor() {
     super({
       jwtFromRequest: cookieExtractor,
-      secretOrKey:
-        'jfhsjkfhkjsf878947289378978*&(*&*(&YUHJJBHGI&#Y78937893oUO*#UIOU#*U#*U*(#UOIJJhuHUH#iuhU*#&*(&#*(&#*&',
+      secretOrKey: salt,
     });
   }
 

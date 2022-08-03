@@ -35,5 +35,6 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # Own
+src/config/config-salt.ts
 src/config/configMail.ts
 yarn.lock

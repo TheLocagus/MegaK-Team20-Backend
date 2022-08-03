@@ -96,6 +96,7 @@ export class RecruiterService {
         }
         case 'employed': {
           foundStudent.status = UserStatus.employed;
+
           foundStudent.endOfReservation
             ? (foundStudent.endOfReservation = null)
             : null;
