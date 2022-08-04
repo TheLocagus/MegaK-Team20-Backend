@@ -37,7 +37,6 @@ export interface AvailableStudentToListResponseInterface {
   teamProjectDegree: number;
 }
 export interface StudentCvInterface {
-  avatar: string
   firstName: string;
   lastName: string;
   bio: string;
@@ -49,8 +48,6 @@ export interface StudentCvInterface {
   bonusProjectUrls: string;
   projectUrls: string;
   portfolioUrls: string | null;
-  ownCodeInTeam: string;
-  codeReviewUrls: string;
   expectedTypeWork: string;
   targetWorkCity: string;
   expectedContractType: string;
