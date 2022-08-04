@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
+import { StudentCvInterface } from '../types/student';
 
 @Controller('recruiter')
 export class RecruiterController {
@@ -16,5 +17,12 @@ export class RecruiterController {
     @Param('registerToken') registerToken: string
   ) {
     return this.recruiterService.getOneRecruiterAndCompareToken(id, registerToken);
+  }
+
+  @Get('/cv/:id')
+  getOneStudentCv(
+    @Param('id') id: string
+  ): Promise<StudentCvInterface> {
+    return this.recruiterService.getOneStudentCv(id);
   }
 }
