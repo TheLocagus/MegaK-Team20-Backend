@@ -2,8 +2,11 @@ import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import {Student} from "./student.entity";
 import {GetOneStudentResponseInterface} from "../types/student";
 import {DataSource, Repository} from "typeorm";
-import {CreateStudentDto} from "../dto/create-student.dto";
+import {CreateStudentDto, UpdateStudentDto} from "../dto/create-student.dto";
 import {InjectRepository} from "@nestjs/typeorm";
+import {hashPwd} from "../utils/hash-pwd";
+import {v4 as uuidv4} from 'uuid';
+import {StudentImport} from "../studentImport/studentImport.entity";
 
 @Injectable()
 export class StudentService {
@@ -18,7 +21,8 @@ export class StudentService {
         const oneStudent = await this.dataSource
             .getRepository(Student)
             .createQueryBuilder('student')
-            .where('student.id = :id', {id: id})
+            .leftJoinAndSelect('student.studentImport', 'studentImport')
+            .where('studentImport.id = :id', {id})
             .getOne()
 
         return {
@@ -46,14 +50,15 @@ export class StudentService {
         const oneStudent = await this.dataSource
             .getRepository(Student)
             .createQueryBuilder('student')
-            .where('student.id = :id', {id})
-            .andWhere('student.registerToken = :registerToken', {registerToken})
+            .leftJoinAndSelect('student.studentImport', 'studentImport')
+            .where('studentImport.id = :id', {id})
+            .andWhere('studentImport.registerToken = :registerToken', {registerToken})
             .getOne()
 
         return oneStudent ? {
             isOk: true,
-            id: oneStudent.id,
-            registerToken: oneStudent.registerToken
+            id: oneStudent.studentImport.id,
+            registerToken: oneStudent.studentImport.registerToken
         } : {
             isOk: false,
         }
@@ -61,35 +66,55 @@ export class StudentService {
 
     async createStudent(id: string, createStudentDto: CreateStudentDto) {
         const student = new Student();
+        student.studentImport = await StudentImport.findOneBy({
+            id,
+        })
+        student.id = uuidv4();
+        student.pwdHash = hashPwd(createStudentDto.pwdHash);
+        student.expectedContractType = createStudentDto.expectedContractType;
+        student.expectedTypeWork = createStudentDto.expectedTypeWork;
+        student.bio = createStudentDto.bio;
+        student.courses = createStudentDto.courses;
+        student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
+        student.education = createStudentDto.education;
+        student.expectedSalary = createStudentDto.expectedSalary;
+        student.projectUrls = createStudentDto.projectUrls;
+        student.firstName = createStudentDto.firstName;
+        student.githubUsername = createStudentDto.githubUsername;
+        student.lastName = createStudentDto.lastName;
+        student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
+        student.portfolioUrls = createStudentDto.portfolioUrls;
+        student.targetWorkCity = createStudentDto.targetWorkCity;
+        student.telephone = createStudentDto.telephone;
+        student.workExperience = createStudentDto.workExperience;
+        await student.save()
+    }
+
+    async patchStudent(id: string, updateStudentDto: UpdateStudentDto) {
         await this.dataSource
             .createQueryBuilder()
             .update(Student)
             .set({
-                id: student.id,
-                currentTokenId: '',
-                password: createStudentDto.password,
-                bio: createStudentDto. bio,
-                canTakeApprenticeship: createStudentDto.canTakeApprenticeship,
-                courses: createStudentDto.courses,
-                education: createStudentDto.education,
-                expectedContractType: createStudentDto.expectedContractType,
-                expectedSalary: createStudentDto.expectedSalary,
-                expectedTypeWork: createStudentDto.expectedTypeWork,
-                firstName: createStudentDto.firstName,
-                githubUsername: createStudentDto.githubUsername,
-                lastName: createStudentDto.lastName,
-                monthsOfCommercialExp: createStudentDto.monthsOfCommercialExp,
-                portfolioUrls: createStudentDto.portfolioUrls,
-                targetWorkCity: createStudentDto.targetWorkCity,
-                telephone: createStudentDto.telephone,
-                workExperience: createStudentDto.workExperience,
+                pwdHash: hashPwd(updateStudentDto.pwdHash),
+                bio: updateStudentDto.bio,
+                canTakeApprenticeship: updateStudentDto.canTakeApprenticeship,
+                courses: updateStudentDto.courses,
+                education: updateStudentDto.education,
+                expectedContractType: updateStudentDto.expectedContractType,
+                expectedSalary: updateStudentDto.expectedSalary,
+                expectedTypeWork: updateStudentDto.expectedTypeWork,
+                projectUrls: updateStudentDto.projectUrls,
+                firstName: updateStudentDto.firstName,
+                githubUsername: updateStudentDto.githubUsername,
+                lastName: updateStudentDto.lastName,
+                monthsOfCommercialExp: updateStudentDto.monthsOfCommercialExp,
+                portfolioUrls: updateStudentDto.portfolioUrls,
+                targetWorkCity: updateStudentDto.targetWorkCity,
+                telephone: updateStudentDto.telephone,
+                workExperience: updateStudentDto.workExperience,
             })
-            .where('student.id = :id', {id})
+            .where('studentImport.id = :id', {id})
             .execute()
-    }
-
-    async patchStudent(id: string, createStudentDto: CreateStudentDto) {
-        await this.createStudent(id, createStudentDto)
     }
 
 }

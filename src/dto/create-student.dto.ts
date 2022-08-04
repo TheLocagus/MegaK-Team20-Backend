@@ -1,18 +1,23 @@
+import {ContractType, TypeWork} from "../student/student.entity";
+
 export class CreateStudentDto {
-    password: string;
+    pwdHash: string;
     bio: string;
-    canTakeApprenticeship: (() => string);
+    canTakeApprenticeship: boolean;
     courses: string;
     education: string;
-    expectedContractType: (() => string);
+    expectedContractType: ContractType;
     expectedSalary: string;
-    expectedTypeWork: (() => string);
+    expectedTypeWork: TypeWork;
     firstName: string;
     githubUsername: string;
     lastName: string;
-    monthsOfCommercialExp: (() => string);
+    monthsOfCommercialExp: number;
+    projectUrls: string;
     portfolioUrls: string;
     targetWorkCity: string;
     telephone: string;
     workExperience: string;
 }
+
+export type UpdateStudentDto = CreateStudentDto;

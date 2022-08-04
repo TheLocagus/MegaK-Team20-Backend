@@ -48,9 +48,6 @@ export class Student extends BaseEntity implements StudentInterface {
     })
     pwdHash: string;
 
-    @Column()
-    password: string;
-
     @Column({
         nullable: true,
         default: null,

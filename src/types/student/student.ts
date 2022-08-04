@@ -2,7 +2,6 @@ export interface StudentInterface {
     id: string;
     status: string;
     pwdHash: string;
-    password: string;
     currentTokenId: string | null;
     registerToken: string | null;
     recruiterId: object;
@@ -43,5 +42,3 @@ export interface GetOneStudentResponseInterface {
     workExperience: string;
     projectUrls: string;
 }
-
-export type CreateOneStudentResponseInterface = GetOneStudentResponseInterface

@@ -1,7 +1,7 @@
 import {Body, Controller, Get, Inject, Param, Patch, Post} from '@nestjs/common';
 import {StudentService} from "./student.service";
 import {GetOneStudentResponseInterface} from "../types/student";
-import {CreateStudentDto} from "../dto/create-student.dto";
+import {CreateStudentDto, UpdateStudentDto} from "../dto/create-student.dto";
 
 @Controller('student')
 export class StudentController {
@@ -10,7 +10,7 @@ export class StudentController {
         @Inject(StudentService) private studentService: StudentService,
     ) {
 
-}
+    }
 
     @Get('/:id')
     getOneStudent(
@@ -27,7 +27,7 @@ export class StudentController {
         return this.studentService.getOneStudentAndCompareToken(id, registerToken)
     }
 
-    @Post('/register/:id')
+    @Post('/:id')
     createStudent(
         @Param('id') id: string,
         @Body() createStudentDto: CreateStudentDto) {
@@ -37,8 +37,8 @@ export class StudentController {
     @Patch('/:id')
     patchStudent(
         @Param('id') id: string,
-        @Body() createStudentDto: CreateStudentDto) {
-        return this.studentService.createStudent(id, createStudentDto)
+        @Body() updateStudentDto: UpdateStudentDto) {
+        return this.studentService.patchStudent(id, updateStudentDto)
     }
 
 }
