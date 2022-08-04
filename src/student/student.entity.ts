@@ -145,13 +145,4 @@ export class Student extends BaseEntity implements StudentInterface {
   @OneToOne(() => StudentImport)
   @JoinColumn()
   studentImport: StudentImport;
-
-  @Column()
-  avatar: string | null;
-
-  @Column()
-  ownCodeInTeamUrls: string | null;
-
-  @Column()
-  codeReviewUrls: string | null;
 }
