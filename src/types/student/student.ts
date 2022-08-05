@@ -18,6 +18,7 @@ export interface StudentInterface {
   education: string;
   workExperience: string;
   courses: string;
+  endOfReservation: Date | null;
 }
 
 export interface AvailableStudentToListResponseInterface {
@@ -36,6 +37,7 @@ export interface AvailableStudentToListResponseInterface {
   projectDegree: number;
   teamProjectDegree: number;
 }
+
 export interface StudentCvInterface {
   firstName: string;
   lastName: string;
@@ -48,12 +50,21 @@ export interface StudentCvInterface {
   bonusProjectUrls: string;
   projectUrls: string;
   portfolioUrls: string | null;
+
+export interface ForInterviewStudentToListResponseInterface {
+  id: string;
+  firstName: string;
+  lastName: string;
   expectedTypeWork: string;
   targetWorkCity: string;
   expectedContractType: string;
   expectedSalary: string;
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;
-  education: string;
-  workExperience: string;
+  courseCompletion: number;
+  courseEngagment: number;
+  projectDegree: number;
+  teamProjectDegree: number;
+  githubUsername: string;
+  endOfReservation: Date;
 }

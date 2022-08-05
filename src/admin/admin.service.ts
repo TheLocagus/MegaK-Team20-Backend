@@ -1,24 +1,28 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { MailService } from '../mail/mail.service';
 import { registeredStudentInfoEmailTemplate } from '../templates/email/registered-student-info';
-import { AddRecruiterDto } from '../dto/add-recruiter.dto';
+import { AddRecruiterDto } from './dto/add-recruiter.dto';
 import { Recruiter } from '../recruiter/recruiter.entity';
 import { MulterDiskUploadedFiles } from '../interfaces/files';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import * as path from 'path';
 import { storageDir } from '../utils/storage';
-import { StudentToImportDto } from './dto/student-to-import.dto';
+import { StudentToImport } from '../interfaces/student-to-import';
 import { isStudentToImport } from '../utils/is-student-to-import';
 import { StudentImport } from '../studentImport/studentImport.entity';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class AdminService {
-  constructor(@Inject(MailService) private mailService: MailService) {}
+  constructor(
+    @Inject(MailService) private mailService: MailService,
+    @Inject(forwardRef(() => DataSource)) private dataSource: DataSource,
+  ) {}
 
   async importStudents(files: MulterDiskUploadedFiles) {
     const fileProperty = files?.testData?.[0] ?? null;
-    const students: StudentToImportDto[] = [];
+    const students: StudentToImport[] = [];
 
     try {
       if (
@@ -28,9 +32,9 @@ export class AdminService {
         throw new Error('No file or file format is different then JSON.');
       }
       const data = JSON.parse(
-        fs.readFileSync(
+        await fs.readFile(
           path.join(storageDir(), 'students-list', fileProperty.filename),
-          'utf8',
+          'utf-8',
         ),
       );
 
@@ -43,14 +47,12 @@ export class AdminService {
       });
 
       for (const student of students) {
-        const importedStudent = new StudentImport();
-        const token = uuid();
-
         const checkEmail = await StudentImport.findOne({
           where: { email: student.email },
         });
-
         if (!checkEmail) {
+          const importedStudent = new StudentImport();
+          const token = uuid();
           importedStudent.email = student.email;
           importedStudent.bonusProjectsUrls = student.bonusProjectUrls;
           importedStudent.courseCompletion = student.courseCompletion;
@@ -64,12 +66,29 @@ export class AdminService {
           await this.mailService.sendMail(
             importedStudent.email,
             'Aktywacja konta MegaK Head Hunters',
-            registeredStudentInfoEmailTemplate(importedStudent.id, token),
+            registeredStudentInfoEmailTemplate(
+              importedStudent.id,
+              token,
+              'Kursancie',
+            ),
           );
+        } else {
+          await this.dataSource
+            .createQueryBuilder()
+            .update(StudentImport)
+            .set({
+              bonusProjectsUrls: student.bonusProjectUrls,
+              courseCompletion: student.courseCompletion,
+              courseEngagement: student.courseEngagment,
+              projectDegree: student.projectDegree,
+              teamProjectDegree: student.teamProjectDegree,
+            })
+            .where('email = :email', { email: student.email })
+            .execute();
         }
       }
 
-      fs.unlinkSync(
+      await fs.unlink(
         path.join(storageDir(), 'students-list', fileProperty.filename),
       );
 
@@ -80,7 +99,7 @@ export class AdminService {
     } catch (error) {
       try {
         if (fileProperty) {
-          fs.unlinkSync(
+          await fs.unlink(
             path.join(storageDir(), 'students-list', fileProperty.filename),
           );
         }
@@ -91,20 +110,49 @@ export class AdminService {
   }
 
   async importRecruiters(recruiter: AddRecruiterDto) {
-    const importedRecruiter: any = new Recruiter();
-    const token = uuid();
-    //Dodać isActive do rekrutera w bazie danych
-    importedRecruiter.email = recruiter.email;
-    importedRecruiter.fullName = recruiter.fullName;
-    importedRecruiter.company = recruiter.company;
-    importedRecruiter.maxReservedStudents = recruiter.maxReservedStudents;
-    importedRecruiter.isActive = false;
-    await importedRecruiter.save();
+    const recruiterFromDB = await Recruiter.findOne({
+      where: { email: recruiter.email },
+    });
+    if (!recruiterFromDB) {
+      const importedRecruiter = new Recruiter();
+      const token = uuid();
+      //Dodać isActive do rekrutera w bazie danych
+      importedRecruiter.email = recruiter.email;
+      importedRecruiter.registerToken = token;
+      importedRecruiter.fullName = recruiter.fullName;
+      importedRecruiter.company = recruiter.company;
+      importedRecruiter.maxReservedStudents = recruiter.maxReservedStudents;
+      importedRecruiter.isActive = false;
+      await importedRecruiter.save();
 
-    await this.mailService.sendMail(
-      importedRecruiter.email,
-      'Aktywacja konta MegaK Head Hunters',
-      registeredStudentInfoEmailTemplate(importedRecruiter.id, token),
-    );
+      await this.mailService.sendMail(
+        importedRecruiter.email,
+        'Aktywacja konta MegaK Head Hunters',
+        registeredStudentInfoEmailTemplate(
+          importedRecruiter.id,
+          token,
+          'Rekruterze',
+        ),
+      );
+      return {
+        success: true,
+        message: 'Recruiter saved successfully',
+      };
+    } else {
+      await this.dataSource
+        .createQueryBuilder()
+        .update(Recruiter)
+        .set({
+          fullName: recruiter.fullName,
+          company: recruiter.company,
+          maxReservedStudents: recruiter.maxReservedStudents,
+        })
+        .where('email = :email', { email: recruiter.email })
+        .execute();
+      return {
+        success: true,
+        message: 'Recruiter modified',
+      };
+    }
   }
 }
