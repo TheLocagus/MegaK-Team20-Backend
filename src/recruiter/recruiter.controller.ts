@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
+import { StudentCvInterface } from '../types/student';
 
 @Controller('recruiter')
 export class RecruiterController {
@@ -29,5 +30,12 @@ export class RecruiterController {
   @Patch('/:id')
   changeStatus(@Param('id') id: string, @Body() status: { status: string }) {
     return this.recruiterService.changeStatus(id, status.status);
+  }
+
+  @Get('/cv/:id')
+  getOneStudentCv(
+    @Param('id') id: string
+  ): Promise<StudentCvInterface> {
+    return this.recruiterService.getOneStudentCv(id);
   }
 }

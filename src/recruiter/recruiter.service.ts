@@ -4,6 +4,7 @@ import { Student, UserStatus } from '../student/student.entity';
 import {
   AvailableStudentToListResponseInterface,
   ForInterviewStudentToListResponseInterface,
+  StudentCvInterface,
 } from '../types/student';
 import { Recruiter } from './recruiter.entity';
 import { StudentImport } from '../studentImport/studentImport.entity';
@@ -26,7 +27,7 @@ export class RecruiterService {
       const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
         id: infoAboutStudent.studentImport.id,
         courseCompletion: infoAboutStudent.studentImport.courseCompletion,
-        courseEngagment: infoAboutStudent.studentImport.courseEngagement,
+        courseEngagement: infoAboutStudent.studentImport.courseEngagement,
         teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
         projectDegree: infoAboutStudent.studentImport.projectDegree,
         canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
@@ -150,5 +151,36 @@ export class RecruiterService {
       dataToResponse.push(studentInfo);
     }
     return dataToResponse;
+  }
+
+  async getOneStudentCv(id: string): Promise<StudentCvInterface> {
+    const oneStudent = await this.dataSource
+      .getRepository(Student)
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .where('studentImport.id = :id', {id})
+      .getOne();
+
+    return {
+        firstName: oneStudent.firstName,
+        lastName: oneStudent.lastName,
+        bio: oneStudent.bio,
+        githubUsername: oneStudent.githubUsername,
+        courseCompletion: oneStudent.studentImport.courseCompletion,
+        courseEngagement: oneStudent.studentImport.courseEngagement,
+        projectDegree: oneStudent.studentImport.projectDegree,
+        teamProjectDegree: oneStudent.studentImport.projectDegree,
+        bonusProjectUrls: oneStudent.studentImport.bonusProjectsUrls,
+        projectUrls: oneStudent.projectUrls,
+        portfolioUrls: oneStudent.portfolioUrls,
+        expectedTypeWork: oneStudent.expectedTypeWork,
+        targetWorkCity: oneStudent.targetWorkCity,
+        expectedContractType: oneStudent.expectedTypeWork,
+        expectedSalary: oneStudent.expectedSalary,
+        canTakeApprenticeship: oneStudent.canTakeApprenticeship,
+        monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
+        education: oneStudent.education,
+        workExperience: oneStudent.workExperience,
+      };
   }
 }

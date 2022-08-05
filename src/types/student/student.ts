@@ -33,10 +33,23 @@ export interface AvailableStudentToListResponseInterface {
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;
   courseCompletion: number;
-  courseEngagment: number;
+  courseEngagement: number;
   projectDegree: number;
   teamProjectDegree: number;
 }
+
+export interface StudentCvInterface {
+  firstName: string;
+  lastName: string;
+  bio: string;
+  githubUsername: string;
+  courseCompletion: number;
+  courseEngagement: number;
+  projectDegree: number;
+  teamProjectDegree: number;
+  bonusProjectUrls: string;
+  projectUrls: string;
+  portfolioUrls: string | null;
 
 export interface ForInterviewStudentToListResponseInterface {
   id: string;
