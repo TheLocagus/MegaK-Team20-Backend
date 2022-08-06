@@ -50,7 +50,16 @@ export interface StudentCvInterface {
   bonusProjectUrls: string;
   projectUrls: string;
   portfolioUrls: string | null;
+  expectedTypeWork: string;
+  targetWorkCity: string;
+  expectedContractType: string;
+  expectedSalary: string;
+  canTakeApprenticeship: boolean;
+  monthsOfCommercialExp: number;
+  education: string;
+  workExperience: string;
 
+}
 export interface ForInterviewStudentToListResponseInterface {
   id: string;
   firstName: string;
