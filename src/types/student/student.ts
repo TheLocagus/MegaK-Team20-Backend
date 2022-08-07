@@ -3,7 +3,6 @@ export interface StudentInterface {
     status: string;
     pwdHash: string;
     currentTokenId: string | null;
-    registerToken: string | null;
     recruiterId: object;
     telephone: string;
     firstName: string;
@@ -41,4 +40,9 @@ export interface GetOneStudentResponseInterface {
     telephone: string;
     workExperience: string;
     projectUrls: string;
+    teamProjectDegree: number;
+    projectDegree: number;
+    courseEngagement: number;
+    courseCompletion: number;
+
 }
