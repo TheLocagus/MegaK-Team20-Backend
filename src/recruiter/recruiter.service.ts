@@ -7,6 +7,7 @@ import {
   StudentCvInterface,
 } from '../types/student';
 import { Recruiter } from './recruiter.entity';
+import { FiltersDto } from '../dto/recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
 
 @Injectable()
@@ -158,29 +159,82 @@ export class RecruiterService {
       .getRepository(Student)
       .createQueryBuilder('student')
       .leftJoinAndSelect('student.studentImport', 'studentImport')
-      .where('studentImport.id = :id', {id})
+      .where('studentImport.id = :id', { id })
       .getOne();
 
     return {
-        firstName: oneStudent.firstName,
-        lastName: oneStudent.lastName,
-        bio: oneStudent.bio,
-        githubUsername: oneStudent.githubUsername,
-        courseCompletion: oneStudent.studentImport.courseCompletion,
-        courseEngagement: oneStudent.studentImport.courseEngagement,
-        projectDegree: oneStudent.studentImport.projectDegree,
-        teamProjectDegree: oneStudent.studentImport.projectDegree,
-        bonusProjectUrls: oneStudent.studentImport.bonusProjectsUrls,
-        projectUrls: oneStudent.projectUrls,
-        portfolioUrls: oneStudent.portfolioUrls,
-        expectedTypeWork: oneStudent.expectedTypeWork,
-        targetWorkCity: oneStudent.targetWorkCity,
-        expectedContractType: oneStudent.expectedTypeWork,
-        expectedSalary: oneStudent.expectedSalary,
-        canTakeApprenticeship: oneStudent.canTakeApprenticeship,
-        monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
-        education: oneStudent.education,
-        workExperience: oneStudent.workExperience,
-      };
+      firstName: oneStudent.firstName,
+      lastName: oneStudent.lastName,
+      bio: oneStudent.bio,
+      githubUsername: oneStudent.githubUsername,
+      courseCompletion: oneStudent.studentImport.courseCompletion,
+      courseEngagement: oneStudent.studentImport.courseEngagement,
+      projectDegree: oneStudent.studentImport.projectDegree,
+      teamProjectDegree: oneStudent.studentImport.projectDegree,
+      bonusProjectUrls: oneStudent.studentImport.bonusProjectsUrls,
+      projectUrls: oneStudent.projectUrls,
+      portfolioUrls: oneStudent.portfolioUrls,
+      expectedTypeWork: oneStudent.expectedTypeWork,
+      targetWorkCity: oneStudent.targetWorkCity,
+      expectedContractType: oneStudent.expectedTypeWork,
+      expectedSalary: oneStudent.expectedSalary,
+      canTakeApprenticeship: oneStudent.canTakeApprenticeship,
+      monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
+      education: oneStudent.education,
+      workExperience: oneStudent.workExperience,
+    };
+  }
+
+  async filterListWithAllStudents(filters: FiltersDto) {
+    const {
+      contractType,
+      codeRate,
+      courseRate,
+      internship,
+      teamWorkRate,
+      workPlace,
+      experience,
+      salary,
+      activityRate,
+    } = filters;
+
+    const filteredStudents = await this.dataSource
+      .getRepository(Student)
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .where('studentImport.isActive = :isActive', { isActive: true })
+      .andWhere('student.expectedContractType IN (:...contractType)', {
+        contractType,
+      })
+      .andWhere('studentImport.projectDegree IN (:...codeRate)', {
+        codeRate,
+      })
+      .andWhere('studentImport.courseCompletion IN (:...courseRate)', {
+        courseRate,
+      })
+      .andWhere('student.canTakeApprenticeship = :internship', {
+        internship,
+      })
+      .andWhere('studentImport.teamProjectDegree IN (:...teamWorkRate)', {
+        teamWorkRate,
+      })
+      .andWhere('student.targetWorkCity IN (:...workPlace)', {
+        workPlace,
+      })
+      .andWhere('student.monthsOfCommercialExp = :experience', {
+        experience,
+      })
+      .andWhere('student.expectedSalary >= :salaryLow', {
+        salaryLow: salary[0],
+      })
+      .andWhere('student.expectedSalary <= :salaryHigh', {
+        salaryHigh: salary[1],
+      })
+      .andWhere('studentImport.courseEngagement IN (:...activityRate)', {
+        activityRate,
+      })
+      .getMany();
+
+    return filteredStudents;
   }
 }
