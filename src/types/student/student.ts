@@ -58,6 +58,9 @@ export interface StudentCvInterface {
   monthsOfCommercialExp: number;
   education: string;
   workExperience: string;
+  courses: string,
+  email: string,
+  telephone: string,
 }
 export interface ForInterviewStudentToListResponseInterface {
   id: string;
