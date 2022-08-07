@@ -181,6 +181,9 @@ export class RecruiterService {
       monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
       education: oneStudent.education,
       workExperience: oneStudent.workExperience,
+      courses: oneStudent.courses,
+      email: oneStudent.studentImport.email,
+      telephone: oneStudent.telephone,
     };
   }
 
