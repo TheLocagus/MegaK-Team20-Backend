@@ -134,7 +134,7 @@ export class RecruiterService {
       const studentInfo: ForInterviewStudentToListResponseInterface = {
         id: student.studentImport.id,
         courseCompletion: student.studentImport.courseCompletion,
-        courseEngagment: student.studentImport.courseEngagement,
+        courseEngagement: student.studentImport.courseEngagement,
         projectDegree: student.studentImport.projectDegree,
         teamProjectDegree: student.studentImport.teamProjectDegree,
         firstName: student.firstName,

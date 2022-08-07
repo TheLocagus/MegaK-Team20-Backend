@@ -70,9 +70,10 @@ export interface ForInterviewStudentToListResponseInterface {
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;
   courseCompletion: number;
-  courseEngagment: number;
+  courseEngagement: number;
   projectDegree: number;
   teamProjectDegree: number;
   githubUsername: string;
   endOfReservation: Date;
 }
+
