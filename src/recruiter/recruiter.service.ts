@@ -8,7 +8,6 @@ import {
 } from '../types/student';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
-import { StudentImport } from '../studentImport/studentImport.entity';
 
 @Injectable()
 export class RecruiterService {
@@ -198,7 +197,7 @@ export class RecruiterService {
       activityRate,
     } = filters;
 
-    const filteredStudents = await this.dataSource
+    return await this.dataSource
       .getRepository(Student)
       .createQueryBuilder('student')
       .leftJoinAndSelect('student.studentImport', 'studentImport')
@@ -234,7 +233,5 @@ export class RecruiterService {
         activityRate,
       })
       .getMany();
-
-    return filteredStudents;
   }
 }
