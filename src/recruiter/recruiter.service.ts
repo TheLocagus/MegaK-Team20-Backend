@@ -8,6 +8,7 @@ import {
 } from '../types/student';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
+import { ContractType, TypeWork } from '../enums/student.enum';
 
 @Injectable()
 export class RecruiterService {
@@ -200,40 +201,75 @@ export class RecruiterService {
       activityRate,
     } = filters;
 
+    const ifNoFilteredRatios = [1, 2, 3, 4, 5];
+    const ifNoFilteredOrSignedAllContractType: ContractType[] = [
+      ContractType.b2b,
+      ContractType.contractOfEmployment,
+      ContractType.contractOfMandate,
+      ContractType.contractWork,
+      ContractType.noPreference,
+    ];
+    const noFilteredOrAllSignedTypeWork: TypeWork[] = [
+      TypeWork.stationary,
+      TypeWork.readyToMove,
+      TypeWork.hybrid,
+      TypeWork.remotely,
+      TypeWork.noPreference,
+    ];
+
     return await this.dataSource
       .getRepository(Student)
       .createQueryBuilder('student')
       .leftJoinAndSelect('student.studentImport', 'studentImport')
       .where('studentImport.isActive = :isActive', { isActive: true })
       .andWhere('student.expectedContractType IN (:...contractType)', {
-        contractType,
+        contractType:
+          contractType.length !== 0
+            ? contractType.length === 4
+              ? ifNoFilteredOrSignedAllContractType
+              : [...contractType, TypeWork.noPreference]
+            : ifNoFilteredOrSignedAllContractType,
       })
       .andWhere('studentImport.projectDegree IN (:...codeRate)', {
-        codeRate,
+        codeRate: codeRate.length !== 0 ? codeRate : ifNoFilteredRatios,
       })
       .andWhere('studentImport.courseCompletion IN (:...courseRate)', {
-        courseRate,
+        courseRate: courseRate.length !== 0 ? courseRate : ifNoFilteredRatios,
       })
-      .andWhere('student.canTakeApprenticeship = :internship', {
-        internship,
+      .andWhere('student.canTakeApprenticeship IN (:...internship)', {
+        internship: internship !== null ? [internship] : [true, false],
       })
       .andWhere('studentImport.teamProjectDegree IN (:...teamWorkRate)', {
-        teamWorkRate,
+        teamWorkRate:
+          teamWorkRate.length !== 0 ? teamWorkRate : ifNoFilteredRatios,
       })
-      .andWhere('student.targetWorkCity IN (:...workPlace)', {
-        workPlace,
+      .andWhere('student.expectedTypeWork IN (:...workPlace)', {
+        workPlace:
+          workPlace.length !== 0
+            ? workPlace.length === 2
+              ? noFilteredOrAllSignedTypeWork
+              : workPlace[0] === 'stationary'
+              ? [
+                  TypeWork.stationary,
+                  TypeWork.readyToMove,
+                  TypeWork.hybrid,
+                  TypeWork.noPreference,
+                ]
+              : [TypeWork.hybrid, TypeWork.remotely, TypeWork.noPreference]
+            : noFilteredOrAllSignedTypeWork,
       })
-      .andWhere('student.monthsOfCommercialExp = :experience', {
-        experience,
+      .andWhere('student.monthsOfCommercialExp >= :experience', {
+        experience: experience !== null ? experience : 0,
       })
       .andWhere('student.expectedSalary >= :salaryLow', {
-        salaryLow: salary[0],
+        salaryLow: salary[0] ? salary[0] : 0,
       })
       .andWhere('student.expectedSalary <= :salaryHigh', {
-        salaryHigh: salary[1],
+        salaryHigh: salary[1] ? salary[1] : 99999999,
       })
       .andWhere('studentImport.courseEngagement IN (:...activityRate)', {
-        activityRate,
+        activityRate:
+          activityRate.length !== 0 ? activityRate : ifNoFilteredRatios,
       })
       .getMany();
   }

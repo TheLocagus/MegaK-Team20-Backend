@@ -1,11 +1,11 @@
-import { IsArray, IsBoolean, IsNumber } from 'class-validator';
+import { IsArray, IsBoolean, IsNumber, IsOptional } from 'class-validator';
 
 export class FiltersDto {
   @IsArray()
   activityRate: number[];
 
   @IsArray()
-  codeRate: number[];
+  codeRate: number[] | [];
 
   @IsArray()
   contractType: string[];
@@ -14,7 +14,8 @@ export class FiltersDto {
   courseRate: number[];
 
   @IsNumber()
-  experience: number;
+  @IsOptional()
+  experience: number | null;
 
   @IsBoolean()
   internship: boolean;

@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseArrayPipe, Patch, Post, Put} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
 import { StudentCvInterface } from '../types/student';
 import { FiltersDto } from '../dto/recruiter.dto';

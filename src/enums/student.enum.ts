@@ -6,9 +6,18 @@ export enum StudentTypeOfWorkEnum {
   bezZnaczenia = 'Bez znaczenia',
 }
 
-export enum StudentContractTypeEnum {
-  uop = 'Tylko UoP',
-  b2b = 'Możliwe B2B',
-  uzUod = 'Możliwe UZ/UoD',
-  brakPreferencji = 'Brak preferencji',
+export enum ContractType {
+  contractOfEmployment = 'contractOfEmployment',
+  b2b = 'b2b',
+  contractWork = 'contractWork',
+  contractOfMandate = 'contractOfMandate',
+  noPreference = 'noPreference',
+}
+
+export enum TypeWork {
+  stationary = 'stationary',
+  readyToMove = 'readyToMove',
+  remotely = 'remotely',
+  hybrid = 'hybrid',
+  noPreference = 'noPreference',
 }
