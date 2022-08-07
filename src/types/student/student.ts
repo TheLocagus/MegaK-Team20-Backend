@@ -59,6 +59,7 @@ export interface StudentCvInterface {
   education: string;
   workExperience: string;
 }
+
 export interface ForInterviewStudentToListResponseInterface {
   id: string;
   firstName: string;
@@ -76,4 +77,11 @@ export interface ForInterviewStudentToListResponseInterface {
   githubUsername: string;
   endOfReservation: Date;
 }
+
+export interface StudentProfileForRecruiterInterface extends StudentCvInterface {
+  email: string;
+  telephone: string,
+  courses: string,
+}
+
 
