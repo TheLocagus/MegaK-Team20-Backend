@@ -5,6 +5,7 @@ import {
   AvailableStudentToListResponseInterface,
   ForInterviewStudentToListResponseInterface,
   StudentCvInterface,
+  StudentProfileForRecruiterInterface,
 } from '../types/student';
 import { Recruiter } from './recruiter.entity';
 import { StudentImport } from '../studentImport/studentImport.entity';
@@ -182,5 +183,39 @@ export class RecruiterService {
         education: oneStudent.education,
         workExperience: oneStudent.workExperience,
       };
+  }
+
+  async getDataStudentProfileForRecruiter(id: string): Promise<StudentProfileForRecruiterInterface> {
+    const oneStudent = await this.dataSource
+      .getRepository(Student)
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .where('studentImport.id = :id', {id})
+      .getOne();
+
+    return {
+      firstName: oneStudent.firstName,
+      lastName: oneStudent.lastName,
+      bio: oneStudent.bio,
+      githubUsername: oneStudent.githubUsername,
+      courseCompletion: oneStudent.studentImport.courseCompletion,
+      courseEngagement: oneStudent.studentImport.courseEngagement,
+      projectDegree: oneStudent.studentImport.projectDegree,
+      teamProjectDegree: oneStudent.studentImport.projectDegree,
+      bonusProjectUrls: oneStudent.studentImport.bonusProjectsUrls,
+      projectUrls: oneStudent.projectUrls,
+      portfolioUrls: oneStudent.portfolioUrls,
+      expectedTypeWork: oneStudent.expectedTypeWork,
+      targetWorkCity: oneStudent.targetWorkCity,
+      expectedContractType: oneStudent.expectedTypeWork,
+      expectedSalary: oneStudent.expectedSalary,
+      canTakeApprenticeship: oneStudent.canTakeApprenticeship,
+      monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
+      education: oneStudent.education,
+      workExperience: oneStudent.workExperience,
+      courses: oneStudent.courses,
+      email: oneStudent.studentImport.email,
+      telephone: oneStudent.telephone,
+    }
   }
 }
