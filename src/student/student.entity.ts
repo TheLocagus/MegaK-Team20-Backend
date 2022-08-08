@@ -64,13 +64,13 @@ export class Student extends BaseEntity implements StudentInterface {
   telephone: string;
 
   @Column({
-    length: 20,
+    length: 30,
     nullable: false,
   })
   firstName: string;
 
   @Column({
-    length: 27,
+    length: 50,
     nullable: false,
   })
   lastName: string;
@@ -92,7 +92,7 @@ export class Student extends BaseEntity implements StudentInterface {
   projectUrls: string;
 
   @Column({
-    length: 10000,
+    type: 'longtext',
   })
   bio: string;
 
