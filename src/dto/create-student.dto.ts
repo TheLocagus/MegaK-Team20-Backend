@@ -7,7 +7,7 @@ export class CreateStudentDto {
     courses: string;
     education: string;
     expectedContractType: ContractType;
-    expectedSalary: string;
+    expectedSalary: number | string;
     expectedTypeWork: TypeWork;
     firstName: string;
     githubUsername: string;

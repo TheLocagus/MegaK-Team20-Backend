@@ -1,3 +1,5 @@
+import {ContractType, TypeWork} from "../../student/student.entity";
+
 export interface StudentInterface {
   id: string;
   status: string;
@@ -104,4 +106,24 @@ export interface ForInterviewStudentToListResponseInterface {
   teamProjectDegree: number;
   githubUsername: string;
   endOfReservation: Date;
+}
+
+export interface CreateStudentResponse {
+  pwdHash: string;
+  bio: string;
+  canTakeApprenticeship: boolean;
+  courses: string;
+  education: string;
+  expectedContractType: ContractType;
+  expectedSalary: number;
+  expectedTypeWork: TypeWork;
+  firstName: string;
+  githubUsername: string;
+  lastName: string;
+  monthsOfCommercialExp: number;
+  projectUrls: string;
+  portfolioUrls: string;
+  targetWorkCity: string;
+  telephone: string;
+  workExperience: string;
 }
