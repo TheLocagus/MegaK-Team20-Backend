@@ -41,7 +41,11 @@ export class StudentService {
             projectUrls: oneStudent.projectUrls,
             targetWorkCity: oneStudent.targetWorkCity,
             telephone: oneStudent.telephone,
-            workExperience: oneStudent.workExperience
+            workExperience: oneStudent.workExperience,
+            teamProjectDegree: oneStudent.studentImport.teamProjectDegree,
+            projectDegree: oneStudent.studentImport.projectDegree,
+            courseEngagement: oneStudent.studentImport.courseEngagement,
+            courseCompletion: oneStudent.studentImport.courseCompletion,
         };
 
     }
@@ -95,7 +99,6 @@ export class StudentService {
             .createQueryBuilder()
             .update(Student)
             .set({
-                pwdHash: hashPwd(updateStudentDto.pwdHash),
                 bio: updateStudentDto.bio,
                 canTakeApprenticeship: updateStudentDto.canTakeApprenticeship,
                 courses: updateStudentDto.courses,

@@ -20,4 +20,4 @@ export class CreateStudentDto {
     workExperience: string;
 }
 
-export type UpdateStudentDto = CreateStudentDto;
+export type UpdateStudentDto = Omit<CreateStudentDto, 'pwdHash'>;
