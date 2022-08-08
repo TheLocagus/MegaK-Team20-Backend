@@ -33,3 +33,8 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Own
+src/config/config-salt.ts
+src/config/configMail.ts
+yarn.lock

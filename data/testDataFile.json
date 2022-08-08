@@ -1,0 +1,90 @@
+[
+  {
+    "email": "louisebaker@vantage.com",
+    "courseCompletion": 5,
+    "courseEngagment": 5,
+    "projectDegree": 5,
+    "teamProjectDegree": 5,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "greenorr@iplax.com",
+    "courseCompletion": 2,
+    "courseEngagment": 2,
+    "projectDegree": 3,
+    "teamProjectDegree": 3,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "dickersonhughes@nixelt.com",
+    "courseCompletion": 1,
+    "courseEngagment": 1,
+    "projectDegree": 5,
+    "teamProjectDegree": 1,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "sharpevazquez@miraclis.com",
+    "courseCompletion": 1,
+    "courseEngagment": 4,
+    "projectDegree": 3,
+    "teamProjectDegree": 5,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "irmaallison@eargo.com",
+    "courseCompletion": 1,
+    "courseEngagment": 3,
+    "projectDegree": 2,
+    "teamProjectDegree": 5,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "summershamilton@syntac.com",
+    "courseCompletion": 1,
+    "courseEngagment": 2,
+    "projectDegree": 2,
+    "teamProjectDegree": 2,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "jodikaufman@norsup.com",
+    "courseCompletion": 2,
+    "courseEngagment": 3,
+    "projectDegree": 5,
+    "teamProjectDegree": 1,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "christinegamble@ezent.com",
+    "courseCompletion": 5,
+    "courseEngagment": 1,
+    "projectDegree": 5,
+    "teamProjectDegree": 1,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "calderonlowery@exoblue.com",
+    "courseCompletion": 2,
+    "courseEngagment": 1,
+    "projectDegree": 5,
+    "teamProjectDegree": 2,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "ernabennett@orbaxter.com",
+    "courseCompletion": 3,
+    "courseEngagment": 4,
+    "projectDegree": 1,
+    "teamProjectDegree": 2,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  },
+  {
+    "email": "tesik@orbaxter.com",
+    "courseCompletion": 3,
+    "courseEngagment": 4,
+    "projectDegree": 1,
+    "teamProjectDegree": 2,
+    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+  }
+]
