@@ -38,4 +38,11 @@ export class RecruiterController {
   ): Promise<StudentCvInterface> {
     return this.recruiterService.getOneStudentCv(id);
   }
+
+  @Get('/students/:searchedPhrase')
+  getAllWithSearchedPhrase(
+    @Param('searchedPhrase') searchedPhrase: string | number
+  ) {
+    return this.recruiterService.getAllWithSearchedPhrase(searchedPhrase);
+  }
 }
