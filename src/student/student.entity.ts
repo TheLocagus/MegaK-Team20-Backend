@@ -28,7 +28,8 @@ export enum TypeWork {
 export enum ContractType {
   contractOfEmployment = 'contractOfEmployment',
   b2b = 'b2b',
-  contractWorkOrContractOfMandate = 'contractWorkOrContractOfMandate',
+  contractWork = 'contractWork',
+  contractOfMandate = 'contractOfMandate',
   noPreference = 'noPreference',
 }
 
