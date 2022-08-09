@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
 import { StudentCvInterface } from '../types/student';
+import { FiltersDto } from '../dto/recruiter.dto';
 
 @Controller('recruiter')
 export class RecruiterController {
@@ -14,6 +15,11 @@ export class RecruiterController {
   @Get('/for-interview')
   getForInterviewStudents() {
     return this.recruiterService.getForInterviewStudents();
+  }
+
+  @Get('/filter')
+  filterListWithAllStudents(@Body() filters: FiltersDto) {
+    return this.recruiterService.filterListWithAllStudents(filters);
   }
 
   @Post('/register/:id/:registerToken')
@@ -33,9 +39,7 @@ export class RecruiterController {
   }
 
   @Get('/cv/:id')
-  getOneStudentCv(
-    @Param('id') id: string
-  ): Promise<StudentCvInterface> {
+  getOneStudentCv(@Param('id') id: string): Promise<StudentCvInterface> {
     return this.recruiterService.getOneStudentCv(id);
   }
 }
