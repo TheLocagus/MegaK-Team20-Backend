@@ -17,7 +17,7 @@ export class RecruiterController {
     return this.recruiterService.getForInterviewStudents();
   }
 
-  @Patch('/filter')
+  @Get('/filter')
   filterListWithAllStudents(@Body() filters: FiltersDto) {
     return this.recruiterService.filterListWithAllStudents(filters);
   }
