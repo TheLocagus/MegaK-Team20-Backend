@@ -186,4 +186,38 @@ export class RecruiterService {
       telephone: oneStudent.telephone,
     };
   }
+
+  async getAllWithSearchedPhrase(searchedPhrase: string | number ) {
+    const infoAboutStudents = await this.dataSource
+      .getRepository(Student)
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .where('student.targetWorkCity = :searchedPhrase', { searchedPhrase })
+      .getMany();
+
+    const dataToResponse: AvailableStudentToListResponseInterface[] = [];
+
+    for (const infoAboutStudent of infoAboutStudents) {
+      const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
+        id: infoAboutStudent.studentImport.id,
+        courseCompletion: infoAboutStudent.studentImport.courseCompletion,
+        courseEngagement: infoAboutStudent.studentImport.courseEngagement,
+        teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
+        projectDegree: infoAboutStudent.studentImport.projectDegree,
+        canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
+        expectedContractType: infoAboutStudent.expectedContractType,
+        expectedSalary: infoAboutStudent.expectedSalary,
+        expectedTypeWork: infoAboutStudent.expectedTypeWork,
+        firstName: infoAboutStudent.firstName,
+        lastName: `${infoAboutStudent.lastName[0]}.`,
+        monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
+        targetWorkCity: infoAboutStudent.targetWorkCity,
+        status: infoAboutStudent.status,
+      };
+      dataToResponse.push(dataAboutOneStudent);
+    }
+    console.log(infoAboutStudents);
+    return dataToResponse;
+
+  }
 }
