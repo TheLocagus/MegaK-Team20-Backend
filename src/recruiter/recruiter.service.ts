@@ -20,6 +20,7 @@ export class RecruiterService {
       .createQueryBuilder('student')
       .leftJoinAndSelect('student.studentImport', 'studentImport')
       .where('studentImport.isActive = :isActive', { isActive: true })
+      .andWhere('student.status = :status', { status: 'active' })
       .getMany();
 
     const dataToResponse: AvailableStudentToListResponseInterface[] = [];
