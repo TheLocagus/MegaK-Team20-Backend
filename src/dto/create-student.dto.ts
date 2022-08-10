@@ -1,4 +1,4 @@
-import { ContractType, TypeWork } from '../student/student.entity';
+import { ContractType, TypeWork } from '../enums/student.enum';
 
 export class CreateStudentDto {
   pwdHash: string;
