@@ -1,5 +1,4 @@
 
-import { ContractType, TypeWork } from '../student/student.entity';
 import {
   IsArray,
   IsBoolean,
@@ -8,6 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import {ContractType, TypeWork} from "../enums/student.enum";
 
 export class CreateStudentDto {
   @IsString()

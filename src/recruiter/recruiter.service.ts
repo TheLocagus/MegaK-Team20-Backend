@@ -8,10 +8,18 @@ import {
 } from '../types/student';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
-import { ContractType, TypeWork } from '../enums/student.enum';
+import {
+  ContractType,
+  RecruiterActionsOfStatusEnum,
+  TypeWork,
+} from '../enums/student.enum';
+import { StudentImport } from '../studentImport/studentImport.entity';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom, map, tap } from 'rxjs';
 
 @Injectable()
 export class RecruiterService {
+  constructor(private readonly httpService: HttpService) {}
   @Inject(forwardRef(() => DataSource)) private dataSource: DataSource;
 
   async getAllStudents() {
@@ -66,10 +74,10 @@ export class RecruiterService {
         };
   }
 
-  async changeStatus(id: string, status: string) {
+  async changeStatus(id: string, status: RecruiterActionsOfStatusEnum) {
     //@TODO ewentualna zmiana nazewnictwa w case'ach
     //@TODO lepsza walidacja błędów
-
+    const foundStudentImport = await StudentImport.findOneBy({ id });
     const foundStudent = await Student.findOne({
       where: {
         studentImport: {
@@ -80,7 +88,7 @@ export class RecruiterService {
 
     try {
       switch (status) {
-        case 'duringTalk': {
+        case `${RecruiterActionsOfStatusEnum.forInterview}`: {
           const reservationTimestamp =
             new Date().getTime() + 10 * 24 * 60 * 60 * 1000;
 
@@ -89,7 +97,7 @@ export class RecruiterService {
           await foundStudent.save();
           break;
         }
-        case 'noInterested': {
+        case `${RecruiterActionsOfStatusEnum.noInterested}`: {
           foundStudent.endOfReservation
             ? (foundStudent.endOfReservation = null)
             : null;
@@ -97,14 +105,14 @@ export class RecruiterService {
           await foundStudent.save();
           break;
         }
-        case 'employed': {
+        case `${RecruiterActionsOfStatusEnum.employed}`: {
           foundStudent.status = UserStatus.employed;
-
+          foundStudentImport.isActive = false;
           foundStudent.endOfReservation
             ? (foundStudent.endOfReservation = null)
             : null;
-          //@TODO tu jest ok, natomiast żeby cała funkcjonalność działała, kursant musi samodzielnie potwierdzić w profilu że został zatrudniony
           await foundStudent.save();
+          await foundStudentImport.save();
           break;
         }
         default: {
@@ -133,6 +141,18 @@ export class RecruiterService {
     const dataToResponse: ForInterviewStudentToListResponseInterface[] = [];
 
     for (const student of students) {
+      // fetch
+      let avatarUrl = '';
+      try {
+        const avatarData = await firstValueFrom(
+          this.httpService.get(
+            `https://api.github.com/users/${student.githubUsername}`,
+          ),
+        );
+        avatarUrl = avatarData.data.avatar_url;
+      } catch (e) {
+        avatarUrl = '';
+      }
       const studentInfo: ForInterviewStudentToListResponseInterface = {
         id: student.studentImport.id,
         courseCompletion: student.studentImport.courseCompletion,
@@ -149,6 +169,7 @@ export class RecruiterService {
         monthsOfCommercialExp: student.monthsOfCommercialExp,
         canTakeApprenticeship: student.canTakeApprenticeship,
         endOfReservation: student.endOfReservation,
+        avatarUrl,
       };
       dataToResponse.push(studentInfo);
     }

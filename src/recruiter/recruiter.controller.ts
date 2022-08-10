@@ -2,6 +2,11 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
 import { StudentCvInterface } from '../types/student';
 import { FiltersDto } from '../dto/recruiter.dto';
+import { RecruiterActionsOfStatusEnum } from '../enums/student.enum';
+
+export interface StatusResponse {
+  status: RecruiterActionsOfStatusEnum;
+}
 
 @Controller('recruiter')
 export class RecruiterController {
@@ -34,7 +39,7 @@ export class RecruiterController {
   }
 
   @Patch('/:id')
-  changeStatus(@Param('id') id: string, @Body() status: { status: string }) {
+  changeStatus(@Param('id') id: string, @Body() status: StatusResponse) {
     return this.recruiterService.changeStatus(id, status.status);
   }
 

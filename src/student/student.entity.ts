@@ -132,7 +132,7 @@ export class Student extends BaseEntity implements StudentInterface {
   studentImport: StudentImport;
 
   @Column({
-    type: 'datetime',
+    type: 'date',
     default: null,
   })
   endOfReservation: Date | null;
