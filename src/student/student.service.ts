@@ -49,20 +49,18 @@ export class StudentService {
 
   async getOneStudentAndCompareToken(id: string, registerToken: string) {
     const oneStudent = await this.dataSource
-      .getRepository(Student)
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .getRepository(StudentImport)
+      .createQueryBuilder('studentImport')
       .where('studentImport.id = :id', { id })
       .andWhere('studentImport.registerToken = :registerToken', {
         registerToken,
       })
       .getOne();
-
     return oneStudent
       ? {
           isOk: true,
-          id: oneStudent.studentImport.id,
-          registerToken: oneStudent.studentImport.registerToken,
+          id: oneStudent.id,
+          registerToken: oneStudent.registerToken,
         }
       : {
           isOk: false,
@@ -70,29 +68,47 @@ export class StudentService {
   }
 
   async createStudent(id: string, createStudentDto: CreateStudentDto) {
-    const student = new Student();
-    student.studentImport = await StudentImport.findOneBy({
-      id,
-    });
-    student.id = uuidv4();
-    student.pwdHash = hashPwd(createStudentDto.pwdHash);
-    student.expectedContractType = createStudentDto.expectedContractType;
-    student.expectedTypeWork = createStudentDto.expectedTypeWork;
-    student.bio = createStudentDto.bio;
-    student.courses = createStudentDto.courses;
-    student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
-    student.education = createStudentDto.education;
-    student.expectedSalary = createStudentDto.expectedSalary;
-    student.projectUrls = createStudentDto.projectUrls;
-    student.firstName = createStudentDto.firstName;
-    student.githubUsername = createStudentDto.githubUsername;
-    student.lastName = createStudentDto.lastName;
-    student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
-    student.portfolioUrls = createStudentDto.portfolioUrls;
-    student.targetWorkCity = createStudentDto.targetWorkCity;
-    student.telephone = createStudentDto.telephone;
-    student.workExperience = createStudentDto.workExperience;
-    await student.save();
+    try {
+      const student = new Student();
+      student.studentImport = await StudentImport.findOneBy({
+        id,
+      });
+      student.id = uuidv4();
+      student.pwdHash = hashPwd(createStudentDto.pwdHash);
+      student.expectedContractType = createStudentDto.expectedContractType;
+      student.expectedTypeWork = createStudentDto.expectedTypeWork;
+      student.bio = createStudentDto.bio;
+      student.courses = createStudentDto.courses;
+      student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
+      student.education = createStudentDto.education;
+      student.expectedSalary = createStudentDto.expectedSalary;
+      student.projectUrls = JSON.stringify(createStudentDto.projectUrls);
+      student.firstName = createStudentDto.firstName;
+      student.githubUsername = createStudentDto.githubUsername;
+      student.lastName = createStudentDto.lastName;
+      student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
+      student.portfolioUrls = JSON.stringify(createStudentDto.portfolioUrls);
+      student.targetWorkCity = createStudentDto.targetWorkCity;
+      student.telephone = createStudentDto.telephone;
+      student.workExperience = createStudentDto.workExperience;
+      await student.save();
+
+      const studentImport = await StudentImport.findOneBy({ id });
+      studentImport.isActive = true;
+      studentImport.registerToken = null;
+      await studentImport.save();
+
+      //@TODO jakaś lepsza walidacja? sprawdzenie czy faktycznie kursant został dodany?
+      return {
+        isOk: true,
+        message: 'Student added correctly.',
+      };
+    } catch (e) {
+      return {
+        isOk: false,
+        message: 'get catched',
+      };
+    }
   }
 
   async patchStudent(id: string, updateStudentDto: UpdateStudentDto) {
@@ -107,12 +123,12 @@ export class StudentService {
         expectedContractType: updateStudentDto.expectedContractType,
         expectedSalary: updateStudentDto.expectedSalary,
         expectedTypeWork: updateStudentDto.expectedTypeWork,
-        projectUrls: updateStudentDto.projectUrls,
+        projectUrls: JSON.stringify(updateStudentDto.projectUrls),
         firstName: updateStudentDto.firstName,
         githubUsername: updateStudentDto.githubUsername,
         lastName: updateStudentDto.lastName,
         monthsOfCommercialExp: updateStudentDto.monthsOfCommercialExp,
-        portfolioUrls: updateStudentDto.portfolioUrls,
+        portfolioUrls: JSON.stringify(updateStudentDto.portfolioUrls),
         targetWorkCity: updateStudentDto.targetWorkCity,
         telephone: updateStudentDto.telephone,
         workExperience: updateStudentDto.workExperience,

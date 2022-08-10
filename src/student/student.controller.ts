@@ -30,7 +30,8 @@ export class StudentController {
     return this.studentService.getOneStudentAndCompareToken(id, registerToken);
   }
 
-  @Post('/:id')
+
+  @Post('/register/:id/')
   createStudent(
     @Param('id') id: string,
     @Body() createStudentDto: CreateStudentDto,

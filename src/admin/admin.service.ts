@@ -61,7 +61,6 @@ export class AdminService {
           importedStudent.teamProjectDegree = student.teamProjectDegree;
           importedStudent.isActive = true; //true dla testów
           importedStudent.registerToken = token;
-          await importedStudent.save();
 
           await this.mailService.sendMail(
             importedStudent.email,
@@ -72,6 +71,8 @@ export class AdminService {
               'Kursancie',
             ),
           );
+
+          await importedStudent.save();
         } else {
           await this.dataSource
             .createQueryBuilder()
