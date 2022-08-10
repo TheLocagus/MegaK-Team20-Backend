@@ -1,22 +1,22 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { configDb } from '../config/config-db';
+import { config } from '../config/config-db';
 
 export const connectionSource = new DataSource({
   type: 'mysql',
-  host: configDb.host,
-  port: configDb.port,
-  username: configDb.username,
-  password: configDb.password,
-  database: configDb.database,
+  host: config.host,
+  port: config.port,
+  username: config.username,
+  password: config.password,
+  database: config.database,
   entities: [
     'dist/**/**/**/*.entity{.ts,.js}',
     'dist/**/**/*.entity{.ts,.js}',
     'dist/**/*.entity{.ts,.js}',
   ],
   bigNumberStrings: false,
-  logging: configDb.logging,
+  logging: config.logging,
   migrations: ['dist/migration/*.js'],
-  synchronize: configDb.synchronize,
+  synchronize: config.synchronize,
   autoLoadEntities: true,
   extra: {
     decimalNumbers: true,

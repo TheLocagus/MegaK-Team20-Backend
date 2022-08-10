@@ -1,7 +1,4 @@
-import {
-  StudentContractTypeEnum,
-  StudentTypeOfWorkEnum,
-} from '../enums/student.enum';
+import { ContractType, StudentTypeOfWorkEnum } from '../enums/student.enum';
 
 export class StudentDto {
   id?: string;
@@ -19,7 +16,7 @@ export class StudentDto {
   bio: string;
   expectedTypeWork: StudentTypeOfWorkEnum;
   targetWorkCity: string;
-  expectedContractType: StudentContractTypeEnum;
+  expectedContractType: ContractType;
   expectedSalary: string;
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;

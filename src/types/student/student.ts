@@ -1,4 +1,4 @@
-import {ContractType, TypeWork} from "../../student/student.entity";
+import { ContractType, TypeWork } from '../../student/student.entity';
 
 export interface StudentInterface {
   id: string;
@@ -14,7 +14,7 @@ export interface StudentInterface {
   projectUrls: string;
   bio: string;
   expectedTypeWork: string;
-  expectedSalary: string;
+  expectedSalary: number;
   targetWorkCity: string;
   expectedContractType: string;
   canTakeApprenticeship: boolean;
@@ -32,7 +32,7 @@ export interface GetOneStudentResponseInterface {
   courses: string;
   education: string;
   expectedContractType: string;
-  expectedSalary: string;
+  expectedSalary: number;
   expectedTypeWork: string;
   firstName: string;
   githubUsername: string;
@@ -57,7 +57,7 @@ export interface AvailableStudentToListResponseInterface {
   expectedTypeWork: string;
   targetWorkCity: string;
   expectedContractType: string;
-  expectedSalary: string;
+  expectedSalary: number;
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;
   courseCompletion: number;
@@ -81,7 +81,7 @@ export interface StudentCvInterface {
   expectedTypeWork: string;
   targetWorkCity: string;
   expectedContractType: string;
-  expectedSalary: string;
+  expectedSalary: string | number;
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;
   education: string;
@@ -97,7 +97,7 @@ export interface ForInterviewStudentToListResponseInterface {
   expectedTypeWork: string;
   targetWorkCity: string;
   expectedContractType: string;
-  expectedSalary: string;
+  expectedSalary: number;
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;
   courseCompletion: number;

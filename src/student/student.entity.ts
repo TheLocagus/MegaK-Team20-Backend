@@ -10,26 +10,12 @@ import {
 import { Recruiter } from '../recruiter/recruiter.entity';
 import { StudentInterface } from '../types/student';
 import { StudentImport } from '../studentImport/studentImport.entity';
+import { ContractType, TypeWork } from '../enums/student.enum';
 
 export enum UserStatus {
   active = 'active',
   duringTalk = 'duringTalk',
   employed = 'employed',
-}
-
-export enum TypeWork {
-  stationary = 'stationary',
-  readyToMove = 'readyToMove',
-  remotely = 'remotely',
-  hybrid = 'hybrid',
-  noPreference = 'noPreference',
-}
-
-export enum ContractType {
-  contractOfEmployment = 'contractOfEmployment',
-  b2b = 'b2b',
-  contractWorkOrContractOfMandate = 'contractWorkOrContractOfMandate',
-  noPreference = 'noPreference',
 }
 
 @Entity()
@@ -115,9 +101,8 @@ export class Student extends BaseEntity implements StudentInterface {
 
   @Column({
     default: 0,
-    length: 6,
   })
-  expectedSalary: string;
+  expectedSalary: number;
 
   @Column()
   canTakeApprenticeship: boolean;
