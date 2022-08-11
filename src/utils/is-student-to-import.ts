@@ -1,20 +1,20 @@
 import { StudentToImport } from '../interfaces/student-to-import';
-import { isEmail, Max, Min } from 'class-validator';
+import { isEmail, max, min } from 'class-validator';
 
 export const isStudentToImport = (arg: any): arg is StudentToImport => {
   if (!isEmail(arg.email)) {
     return false;
   }
-  if (!(Min(arg.courseCompletion) && Max(arg.courseCompletion))) {
+  if (!(min(arg.courseCompletion, 1) && max(arg.courseCompletion, 5))) {
     return false;
   }
-  if (!(Min(arg.courseEngagment) && Max(arg.courseEngagment))) {
+  if (!(min(arg.courseEngagment, 1) && max(arg.courseEngagment, 5))) {
     return false;
   }
-  if (!(Min(arg.projectDegree) && Max(arg.projectDegree))) {
+  if (!(min(arg.projectDegree, 1) && max(arg.projectDegree, 5))) {
     return false;
   }
-  if (!(Min(arg.teamProjectDegree) && Max(arg.teamProjectDegree))) {
+  if (!(min(arg.teamProjectDegree, 1) && max(arg.teamProjectDegree, 5))) {
     return false;
   } else {
     try {

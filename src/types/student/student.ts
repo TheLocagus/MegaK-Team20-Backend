@@ -128,3 +128,14 @@ export interface CreateStudentResponse {
   telephone: string;
   workExperience: string;
 }
+
+export type ICheckStudentIfExist =
+  | {
+      success: true;
+      id: string;
+      registerToken: string;
+      role: 'student';
+    }
+  | {
+      success: false;
+    };
