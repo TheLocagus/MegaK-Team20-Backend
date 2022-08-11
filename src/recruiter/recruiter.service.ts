@@ -10,7 +10,6 @@ import {
 } from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
-
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map, tap } from 'rxjs';
@@ -54,12 +53,9 @@ export class RecruiterService {
       skip: maxPerPage * (currentPage - 1),
       take: maxPerPage,
     });
-
     const totalPages = Math.ceil(count / maxPerPage);
-
     return { items, count, totalPages };
   }
-
   async getOneRecruiterAndCompareToken(id: string, registerToken: string) {
     const oneRecruiter = await this.dataSource
       .getRepository(Recruiter)
@@ -161,7 +157,7 @@ export class RecruiterService {
       const studentInfo: ForInterviewStudentToListResponseInterface = {
         id: student.studentImport.id,
         courseCompletion: student.studentImport.courseCompletion,
-        courseEngagment: student.studentImport.courseEngagement,
+        courseEngagement: student.studentImport.courseEngagement,
         projectDegree: student.studentImport.projectDegree,
         teamProjectDegree: student.studentImport.teamProjectDegree,
         firstName: student.firstName,
@@ -174,7 +170,6 @@ export class RecruiterService {
         monthsOfCommercialExp: student.monthsOfCommercialExp,
         canTakeApprenticeship: student.canTakeApprenticeship,
         endOfReservation: student.endOfReservation,
-        avatarUrl,
       };
       dataToResponse.push(studentInfo);
     }
@@ -198,12 +193,12 @@ export class RecruiterService {
       courseEngagement: oneStudent.studentImport.courseEngagement,
       projectDegree: oneStudent.studentImport.projectDegree,
       teamProjectDegree: oneStudent.studentImport.projectDegree,
-      bonusProjectUrls: oneStudent.studentImport.bonusProjectsUrls,
-      projectUrls: oneStudent.projectUrls,
-      portfolioUrls: oneStudent.portfolioUrls,
+      bonusProjectUrls: JSON.parse(oneStudent.studentImport.bonusProjectsUrls),
+      projectUrls: JSON.parse(oneStudent.projectUrls),
+      portfolioUrls: JSON.parse(oneStudent.portfolioUrls),
       expectedTypeWork: oneStudent.expectedTypeWork,
+      expectedContractType: oneStudent.expectedContractType,
       targetWorkCity: oneStudent.targetWorkCity,
-      expectedContractType: oneStudent.expectedTypeWork,
       expectedSalary: oneStudent.expectedSalary,
       canTakeApprenticeship: oneStudent.canTakeApprenticeship,
       monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,

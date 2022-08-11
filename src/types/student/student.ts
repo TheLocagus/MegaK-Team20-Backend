@@ -73,9 +73,9 @@ export interface StudentCvInterface {
   courseEngagement: number;
   projectDegree: number;
   teamProjectDegree: number;
-  bonusProjectUrls: string;
-  projectUrls: string;
-  portfolioUrls: string | null;
+  bonusProjectUrls: string[];
+  projectUrls: string[];
+  portfolioUrls: string[] | null;
   expectedTypeWork: string;
   targetWorkCity: string;
   expectedContractType: string;
@@ -99,12 +99,11 @@ export interface ForInterviewStudentToListResponseInterface {
   canTakeApprenticeship: boolean;
   monthsOfCommercialExp: number;
   courseCompletion: number;
-  courseEngagment: number;
+  courseEngagement: number;
   projectDegree: number;
   teamProjectDegree: number;
   githubUsername: string;
   endOfReservation: Date;
-  avatarUrl: string;
 }
 
 export interface CreateStudentResponse {

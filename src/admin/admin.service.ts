@@ -56,6 +56,7 @@ export class AdminService {
         if (!checkEmail) {
           const importedStudent = new StudentImport();
           const token = uuid();
+          importedStudent.id = uuid();
           importedStudent.email = student.email;
           importedStudent.bonusProjectsUrls = student.bonusProjectUrls;
           importedStudent.courseCompletion = student.courseCompletion;
