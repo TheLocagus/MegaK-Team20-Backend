@@ -2,10 +2,9 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
 import {
-  AvailableStudentToListResponseInterface,
   ContractType,
-  ForInterviewStudentToListResponseInterface,
-  StudentCvInterface,
+  ICheckRecruiterIfExist,
+  ISingleStudentCvResponse,
   TypeWork,
 } from '../types';
 import { Recruiter } from './recruiter.entity';
@@ -14,14 +13,22 @@ import { FiltersDto } from '../dto/recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map, tap } from 'rxjs';
-import { RecruiterActionsOfStatusEnum } from '../types/recruiter';
+import {
+  AvailableStudentToListResponseInterface,
+  ForInterviewStudentToListResponseInterface,
+  IAvailableStudentToListResponse,
+  IForInterviewStudentToListResponse,
+  RecruiterActionsOfStatusEnum,
+} from '../types';
 
 @Injectable()
 export class RecruiterService {
   constructor(private readonly httpService: HttpService) {}
   @Inject(forwardRef(() => DataSource)) private dataSource: DataSource;
 
-  async getAllStudents(currentPage = 1) {
+  async getAllStudents(
+    currentPage = 1,
+  ): Promise<IAvailableStudentToListResponse> {
     const maxPerPage = 2;
     const [items, count] = await Student.findAndCount({
       relations: {
@@ -55,133 +62,107 @@ export class RecruiterService {
       take: maxPerPage,
     });
 
+    const availableStudents: AvailableStudentToListResponseInterface[] =
+      items.map((student) => {
+        return {
+          id: student.id,
+          firstName: student.firstName,
+          lastName: `${student.lastName[0]}.`,
+          expectedTypeWork: student.expectedTypeWork,
+          targetWorkCity: student.targetWorkCity,
+          expectedContractType: student.expectedContractType,
+          expectedSalary: student.expectedSalary,
+          canTakeApprenticeship: student.canTakeApprenticeship,
+          monthsOfCommercialExp: student.monthsOfCommercialExp,
+          courseCompletion: student.studentImport.courseCompletion,
+          courseEngagement: student.studentImport.courseEngagement,
+          projectDegree: student.studentImport.projectDegree,
+          teamProjectDegree: student.studentImport.teamProjectDegree,
+        };
+      });
+
     const totalPages = Math.ceil(count / maxPerPage);
 
-    return { items, count, totalPages };
+    return { availableStudents, count, totalPages };
   }
 
-  async getOneRecruiterAndCompareToken(id: string, registerToken: string) {
-    const oneRecruiter = await this.dataSource
-      .getRepository(Recruiter)
-      .createQueryBuilder('recruiter')
-      .where('recruiter.id = :id', { id })
-      .andWhere('recruiter.registerToken = :registerToken', { registerToken })
-      .getOne();
+  async getForInterviewStudents(
+    currentPage = 1,
+  ): Promise<IForInterviewStudentToListResponse> {
+    // let avatarUrl = '';
+    // try {
+    //   const avatarData = await firstValueFrom(
+    //     this.httpService.get(
+    //       `https://api.github.com/users/${student.githubUsername}`,
+    //     ),
+    //   );
+    //   avatarUrl = avatarData.data.avatar_url;
+    // } catch (e) {
+    //   avatarUrl = '';
+    // }
 
-    return oneRecruiter
-      ? {
-          isOk: true,
-          id: oneRecruiter.id,
-          role: 'Recruiter',
-        }
-      : {
-          isOk: false,
-        };
-  }
-
-  async changeStatus(id: string, status: RecruiterActionsOfStatusEnum) {
-    //@TODO ewentualna zmiana nazewnictwa w case'ach
-    //@TODO lepsza walidacja błędów
-    const foundStudentImport = await StudentImport.findOneBy({ id });
-    const foundStudent = await Student.findOne({
-      where: {
+    const maxPerPage = 2;
+    const [items, count] = await Student.findAndCount({
+      relations: {
+        studentImport: true,
+      },
+      select: {
+        id: true,
+        status: true,
+        firstName: true,
+        lastName: true,
+        expectedTypeWork: true,
+        targetWorkCity: true,
+        expectedContractType: true,
+        expectedSalary: true,
+        canTakeApprenticeship: true,
+        monthsOfCommercialExp: true,
+        githubUsername: true,
+        endOfReservation: true,
         studentImport: {
-          id,
+          courseCompletion: true,
+          courseEngagement: true,
+          projectDegree: true,
+          teamProjectDegree: true,
         },
       },
+      where: {
+        status: UserStatus.duringTalk,
+        studentImport: {
+          isActive: true,
+        },
+      },
+      skip: maxPerPage * (currentPage - 1),
+      take: maxPerPage,
     });
 
-    try {
-      switch (status) {
-        case `${RecruiterActionsOfStatusEnum.forInterview}`: {
-          const reservationTimestamp =
-            new Date().getTime() + 10 * 24 * 60 * 60 * 1000;
+    const studentsToTalk: ForInterviewStudentToListResponseInterface[] =
+      items.map((student) => {
+        return {
+          id: student.id,
+          firstName: student.firstName,
+          lastName: student.lastName,
+          expectedTypeWork: student.expectedTypeWork,
+          targetWorkCity: student.targetWorkCity,
+          expectedContractType: student.expectedContractType,
+          expectedSalary: student.expectedSalary,
+          canTakeApprenticeship: student.canTakeApprenticeship,
+          monthsOfCommercialExp: student.monthsOfCommercialExp,
+          courseCompletion: student.studentImport.courseCompletion,
+          courseEngagement: student.studentImport.courseEngagement,
+          projectDegree: student.studentImport.projectDegree,
+          teamProjectDegree: student.studentImport.teamProjectDegree,
+          githubUsername: student.githubUsername,
+          endOfReservation: student.endOfReservation,
+        };
+      });
 
-          foundStudent.endOfReservation = new Date(reservationTimestamp);
-          foundStudent.status = UserStatus.duringTalk;
-          await foundStudent.save();
-          break;
-        }
-        case `${RecruiterActionsOfStatusEnum.noInterested}`: {
-          foundStudent.endOfReservation
-            ? (foundStudent.endOfReservation = null)
-            : null;
-          foundStudent.status = UserStatus.active;
-          await foundStudent.save();
-          break;
-        }
-        case `${RecruiterActionsOfStatusEnum.employed}`: {
-          foundStudent.status = UserStatus.employed;
-          foundStudentImport.isActive = false;
-          foundStudent.endOfReservation
-            ? (foundStudent.endOfReservation = null)
-            : null;
-          await foundStudent.save();
-          await foundStudentImport.save();
-          break;
-        }
-        default: {
-          throw new Error('Something went wrong.');
-        }
-      }
-      return {
-        message: 'Status changed correctly',
-        status: 'Ok',
-      };
-    } catch (e) {
-      return {
-        message: 'Something went wrong. Try again later.',
-      };
-    }
+    const totalPages = Math.ceil(count / maxPerPage);
+
+    return { studentsToTalk, count, totalPages };
   }
 
-  async getForInterviewStudents() {
-    const students = await this.dataSource
-      .getRepository(Student)
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.studentImport', 'studentImport')
-      .where('student.status = :status', { status: UserStatus.duringTalk })
-      .getMany();
-
-    const dataToResponse: ForInterviewStudentToListResponseInterface[] = [];
-
-    for (const student of students) {
-      // fetch
-      let avatarUrl = '';
-      try {
-        const avatarData = await firstValueFrom(
-          this.httpService.get(
-            `https://api.github.com/users/${student.githubUsername}`,
-          ),
-        );
-        avatarUrl = avatarData.data.avatar_url;
-      } catch (e) {
-        avatarUrl = '';
-      }
-      const studentInfo: ForInterviewStudentToListResponseInterface = {
-        id: student.studentImport.id,
-        courseCompletion: student.studentImport.courseCompletion,
-        courseEngagment: student.studentImport.courseEngagement,
-        projectDegree: student.studentImport.projectDegree,
-        teamProjectDegree: student.studentImport.teamProjectDegree,
-        firstName: student.firstName,
-        lastName: student.lastName,
-        githubUsername: student.githubUsername,
-        targetWorkCity: student.targetWorkCity,
-        expectedTypeWork: student.expectedTypeWork,
-        expectedSalary: student.expectedSalary,
-        expectedContractType: student.expectedContractType,
-        monthsOfCommercialExp: student.monthsOfCommercialExp,
-        canTakeApprenticeship: student.canTakeApprenticeship,
-        endOfReservation: student.endOfReservation,
-        avatarUrl,
-      };
-      dataToResponse.push(studentInfo);
-    }
-    return dataToResponse;
-  }
-
-  async getOneStudentCv(id: string): Promise<StudentCvInterface> {
+  async getOneStudentCv(id: string): Promise<ISingleStudentCvResponse> {
     const oneStudent = await this.dataSource
       .getRepository(Student)
       .createQueryBuilder('student')
@@ -189,63 +170,32 @@ export class RecruiterService {
       .where('studentImport.id = :id', { id })
       .getOne();
 
-    return {
-      firstName: oneStudent.firstName,
-      lastName: oneStudent.lastName,
-      bio: oneStudent.bio,
-      githubUsername: oneStudent.githubUsername,
-      courseCompletion: oneStudent.studentImport.courseCompletion,
-      courseEngagement: oneStudent.studentImport.courseEngagement,
-      projectDegree: oneStudent.studentImport.projectDegree,
-      teamProjectDegree: oneStudent.studentImport.projectDegree,
-      bonusProjectUrls: oneStudent.studentImport.bonusProjectsUrls,
-      projectUrls: oneStudent.projectUrls,
-      portfolioUrls: oneStudent.portfolioUrls,
-      expectedTypeWork: oneStudent.expectedTypeWork,
-      targetWorkCity: oneStudent.targetWorkCity,
-      expectedContractType: oneStudent.expectedTypeWork,
-      expectedSalary: oneStudent.expectedSalary,
-      canTakeApprenticeship: oneStudent.canTakeApprenticeship,
-      monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
-      education: oneStudent.education,
-      workExperience: oneStudent.workExperience,
-      courses: oneStudent.courses,
-      email: oneStudent.studentImport.email,
-      telephone: oneStudent.telephone,
-    };
-  }
-
-  async getAllWithSearchedPhrase(searchedPhrase: string | number) {
-    const infoAboutStudents = await this.dataSource
-      .getRepository(Student)
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.studentImport', 'studentImport')
-      .where('student.targetWorkCity = :searchedPhrase', { searchedPhrase })
-      .getMany();
-
-    const dataToResponse: AvailableStudentToListResponseInterface[] = [];
-
-    for (const infoAboutStudent of infoAboutStudents) {
-      const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
-        id: infoAboutStudent.studentImport.id,
-        courseCompletion: infoAboutStudent.studentImport.courseCompletion,
-        courseEngagement: infoAboutStudent.studentImport.courseEngagement,
-        teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
-        projectDegree: infoAboutStudent.studentImport.projectDegree,
-        canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
-        expectedContractType: infoAboutStudent.expectedContractType,
-        expectedSalary: infoAboutStudent.expectedSalary,
-        expectedTypeWork: infoAboutStudent.expectedTypeWork,
-        firstName: infoAboutStudent.firstName,
-        lastName: `${infoAboutStudent.lastName[0]}.`,
-        monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
-        targetWorkCity: infoAboutStudent.targetWorkCity,
-        status: infoAboutStudent.status,
+    if (oneStudent) {
+      return {
+        firstName: oneStudent.firstName,
+        lastName: oneStudent.lastName,
+        bio: oneStudent.bio,
+        githubUsername: oneStudent.githubUsername,
+        courseCompletion: oneStudent.studentImport.courseCompletion,
+        courseEngagement: oneStudent.studentImport.courseEngagement,
+        projectDegree: oneStudent.studentImport.projectDegree,
+        teamProjectDegree: oneStudent.studentImport.projectDegree,
+        bonusProjectUrls: oneStudent.studentImport.bonusProjectsUrls,
+        projectUrls: oneStudent.projectUrls,
+        portfolioUrls: oneStudent.portfolioUrls,
+        expectedTypeWork: oneStudent.expectedTypeWork,
+        targetWorkCity: oneStudent.targetWorkCity,
+        expectedContractType: oneStudent.expectedTypeWork,
+        expectedSalary: oneStudent.expectedSalary,
+        canTakeApprenticeship: oneStudent.canTakeApprenticeship,
+        monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
+        education: oneStudent.education,
+        workExperience: oneStudent.workExperience,
+        courses: oneStudent.courses,
+        email: oneStudent.studentImport.email,
+        telephone: oneStudent.telephone,
       };
-      dataToResponse.push(dataAboutOneStudent);
     }
-    console.log(infoAboutStudents);
-    return dataToResponse;
   }
 
   async filterListWithAllStudents(filters: FiltersDto) {
@@ -332,5 +282,114 @@ export class RecruiterService {
           activityRate.length !== 0 ? activityRate : ifNoFilteredRatios,
       })
       .getMany();
+  }
+
+  async getAllWithSearchedPhrase(searchedPhrase: string | number) {
+    const infoAboutStudents = await this.dataSource
+      .getRepository(Student)
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .where('student.targetWorkCity = :searchedPhrase', { searchedPhrase })
+      .getMany();
+
+    const dataToResponse: AvailableStudentToListResponseInterface[] = [];
+
+    for (const infoAboutStudent of infoAboutStudents) {
+      const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
+        id: infoAboutStudent.studentImport.id,
+        courseCompletion: infoAboutStudent.studentImport.courseCompletion,
+        courseEngagement: infoAboutStudent.studentImport.courseEngagement,
+        teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
+        projectDegree: infoAboutStudent.studentImport.projectDegree,
+        canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
+        expectedContractType: infoAboutStudent.expectedContractType,
+        expectedSalary: infoAboutStudent.expectedSalary,
+        expectedTypeWork: infoAboutStudent.expectedTypeWork,
+        firstName: infoAboutStudent.firstName,
+        lastName: `${infoAboutStudent.lastName[0]}.`,
+        monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
+        targetWorkCity: infoAboutStudent.targetWorkCity,
+      };
+      dataToResponse.push(dataAboutOneStudent);
+    }
+    return dataToResponse;
+  }
+
+  async getOneRecruiterAndCompareToken(
+    id: string,
+    registerToken: string,
+  ): Promise<ICheckRecruiterIfExist> {
+    const oneRecruiter = await this.dataSource
+      .getRepository(Recruiter)
+      .createQueryBuilder('recruiter')
+      .where('recruiter.id = :id', { id })
+      .andWhere('recruiter.registerToken = :registerToken', { registerToken })
+      .getOne();
+
+    return oneRecruiter
+      ? {
+          success: true,
+          id: oneRecruiter.id,
+          role: 'recruiter',
+        }
+      : {
+          success: false,
+        };
+  }
+
+  async changeStatus(id: string, status: RecruiterActionsOfStatusEnum) {
+    //@TODO ewentualna zmiana nazewnictwa w case'ach
+    //@TODO lepsza walidacja błędów
+    const foundStudentImport = await StudentImport.findOneBy({ id });
+    const foundStudent = await Student.findOne({
+      where: {
+        studentImport: {
+          id,
+        },
+      },
+    });
+
+    try {
+      switch (status) {
+        case `${RecruiterActionsOfStatusEnum.forInterview}`: {
+          const reservationTimestamp =
+            new Date().getTime() + 10 * 24 * 60 * 60 * 1000;
+
+          foundStudent.endOfReservation = new Date(reservationTimestamp);
+          foundStudent.status = UserStatus.duringTalk;
+          await foundStudent.save();
+          break;
+        }
+        case `${RecruiterActionsOfStatusEnum.noInterested}`: {
+          foundStudent.endOfReservation
+            ? (foundStudent.endOfReservation = null)
+            : null;
+          foundStudent.status = UserStatus.active;
+          await foundStudent.save();
+          break;
+        }
+        case `${RecruiterActionsOfStatusEnum.employed}`: {
+          foundStudent.status = UserStatus.employed;
+          foundStudentImport.isActive = false;
+          foundStudent.endOfReservation
+            ? (foundStudent.endOfReservation = null)
+            : null;
+          await foundStudent.save();
+          await foundStudentImport.save();
+          break;
+        }
+        default: {
+          throw new Error('Something went wrong.');
+        }
+      }
+      return {
+        message: 'Status changed correctly',
+        status: 'Ok',
+      };
+    } catch (e) {
+      return {
+        message: 'Something went wrong. Try again later.',
+      };
+    }
   }
 }
