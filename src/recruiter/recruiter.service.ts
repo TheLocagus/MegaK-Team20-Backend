@@ -21,37 +21,43 @@ export class RecruiterService {
   constructor(private readonly httpService: HttpService) {}
   @Inject(forwardRef(() => DataSource)) private dataSource: DataSource;
 
-  async getAllStudents() {
-    const infoAboutStudents = await this.dataSource
-      .getRepository(Student)
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.studentImport', 'studentImport')
-      .where('studentImport.isActive = :isActive', { isActive: true })
-      .andWhere('student.status = :status', { status: 'active' })
-      .getMany();
+  async getAllStudents(currentPage = 1) {
+    const maxPerPage = 2;
+    const [items, count] = await Student.findAndCount({
+      relations: {
+        studentImport: true,
+      },
+      select: {
+        id: true,
+        status: true,
+        firstName: true,
+        lastName: true,
+        expectedTypeWork: true,
+        targetWorkCity: true,
+        expectedContractType: true,
+        expectedSalary: true,
+        canTakeApprenticeship: true,
+        monthsOfCommercialExp: true,
+        studentImport: {
+          courseCompletion: true,
+          courseEngagement: true,
+          projectDegree: true,
+          teamProjectDegree: true,
+        },
+      },
+      where: {
+        status: UserStatus.active,
+        studentImport: {
+          isActive: true,
+        },
+      },
+      skip: maxPerPage * (currentPage - 1),
+      take: maxPerPage,
+    });
 
-    const dataToResponse: AvailableStudentToListResponseInterface[] = [];
+    const totalPages = Math.ceil(count / maxPerPage);
 
-    for (const infoAboutStudent of infoAboutStudents) {
-      const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
-        id: infoAboutStudent.studentImport.id,
-        courseCompletion: infoAboutStudent.studentImport.courseCompletion,
-        courseEngagement: infoAboutStudent.studentImport.courseEngagement,
-        teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
-        projectDegree: infoAboutStudent.studentImport.projectDegree,
-        canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
-        expectedContractType: infoAboutStudent.expectedContractType,
-        expectedSalary: infoAboutStudent.expectedSalary,
-        expectedTypeWork: infoAboutStudent.expectedTypeWork,
-        firstName: infoAboutStudent.firstName,
-        lastName: `${infoAboutStudent.lastName[0]}.`,
-        monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
-        targetWorkCity: infoAboutStudent.targetWorkCity,
-        status: infoAboutStudent.status,
-      };
-      dataToResponse.push(dataAboutOneStudent);
-    }
-    return dataToResponse;
+    return { items, count, totalPages };
   }
 
   async getOneRecruiterAndCompareToken(id: string, registerToken: string) {
