@@ -29,7 +29,7 @@ export class RecruiterService {
       .leftJoinAndSelect('student.studentImport', 'studentImport')
       .where('studentImport.isActive = :isActive', { isActive: true })
       .andWhere('student.status = :status', { status: 'active' })
-      .orderBy('student.lastName', 'DESC')
+      .orderBy('student.lastName', 'ASC')
         .skip(maxPerPage * (currentPage - 1))
         .take(maxPerPage)
       .getMany()
