@@ -3,19 +3,18 @@ import { DataSource } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
 import {
   AvailableStudentToListResponseInterface,
+  ContractType,
   ForInterviewStudentToListResponseInterface,
   StudentCvInterface,
-} from '../types/student';
+  TypeWork,
+} from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
-import {
-  ContractType,
-  RecruiterActionsOfStatusEnum,
-  TypeWork,
-} from '../enums/student.enum';
+
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map, tap } from 'rxjs';
+import { RecruiterActionsOfStatusEnum } from '../types/recruiter';
 
 @Injectable()
 export class RecruiterService {
@@ -210,7 +209,7 @@ export class RecruiterService {
     };
   }
 
-  async getAllWithSearchedPhrase(searchedPhrase: string | number ) {
+  async getAllWithSearchedPhrase(searchedPhrase: string | number) {
     const infoAboutStudents = await this.dataSource
       .getRepository(Student)
       .createQueryBuilder('student')
@@ -242,7 +241,7 @@ export class RecruiterService {
     console.log(infoAboutStudents);
     return dataToResponse;
   }
-  
+
   async filterListWithAllStudents(filters: FiltersDto) {
     const {
       contractType,
@@ -327,5 +326,5 @@ export class RecruiterService {
           activityRate.length !== 0 ? activityRate : ifNoFilteredRatios,
       })
       .getMany();
-      }
+  }
 }

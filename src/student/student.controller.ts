@@ -31,17 +31,9 @@ export class StudentController {
     return this.studentService.getOneStudentAndCompareToken(id, registerToken);
   }
 
-  @Post('/register/:id/')
-  createStudent(
-    @Param('id') id: string,
-    @Param('registerToken') registerToken: string,
-    @Body() createStudentDto: CreateStudentDto,
-  ) {
-    return this.studentService.createStudent(
-      id,
-      registerToken,
-      createStudentDto,
-    );
+  @Post('/')
+  createStudent(@Body() createStudentDto: CreateStudentDto) {
+    return this.studentService.createStudent(createStudentDto);
   }
 
   @Patch('/:id')

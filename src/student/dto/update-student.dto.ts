@@ -1,17 +1,46 @@
 import {
+  IsBoolean,
   IsEmail,
-  IsNotEmpty,
+  IsEnum,
   IsNumber,
   IsOptional,
   IsPhoneNumber,
   IsString,
+  MaxLength,
 } from 'class-validator';
-import { CreateStudentDto } from './create-student.dto';
+import { ContractType, TypeWork } from '../../types';
 
-export class UpdateStudentDto extends CreateStudentDto {
-  @IsNotEmpty()
+export class UpdateStudentDto {
+  @IsOptional()
   @IsEmail()
   email: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(30)
+  firstName: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  lastName: string;
+  @IsOptional()
+  @IsString()
+  @MaxLength(39)
+  githubUsername: string;
+  @IsOptional()
+  @IsString()
+  projectUrls: string;
+  @IsOptional()
+  @IsEnum(TypeWork)
+  expectedTypeWork: TypeWork;
+  @IsOptional()
+  @IsEnum(ContractType)
+  expectedContractType: ContractType;
+  @IsOptional()
+  @IsBoolean()
+  canTakeApprenticeship: boolean;
+  @IsOptional()
+  @IsNumber()
+  monthsOfCommercialExp: number;
   @IsOptional()
   @IsPhoneNumber()
   telephone: string;

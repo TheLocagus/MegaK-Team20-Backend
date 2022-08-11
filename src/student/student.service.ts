@@ -75,22 +75,18 @@ export class StudentService {
         };
   }
 
-  async createStudent(
-    id: string,
-    registerToken: string,
-    createStudentDto: CreateStudentDto,
-  ) {
+  async createStudent(createStudentDto: CreateStudentDto) {
     const oneStudent = await StudentImport.findOneOrFail({
       where: {
-        id,
-        registerToken,
+        id: createStudentDto.id,
+        registerToken: createStudentDto.registerToken,
       },
     });
 
     if (oneStudent) {
       const student = new Student();
       student.studentImport = await StudentImport.findOneBy({
-        id,
+        id: createStudentDto.id,
       });
       student.id = uuidv4();
       student.pwdHash = hashPwd(createStudentDto.pwd);

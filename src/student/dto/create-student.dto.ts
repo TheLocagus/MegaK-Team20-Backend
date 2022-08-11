@@ -4,14 +4,20 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  IsUUID,
   MaxLength,
 } from 'class-validator';
 import { ContractType, TypeWork } from '../../types';
 
 export class CreateStudentDto {
+  @IsUUID('4')
+  id: string;
   @IsNotEmpty()
   @IsString()
-  pwd?: string;
+  registerToken: string;
+  @IsNotEmpty()
+  @IsString()
+  pwd: string;
   @IsNotEmpty()
   @IsString()
   @MaxLength(30)
