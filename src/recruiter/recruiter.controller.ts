@@ -1,15 +1,17 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
-import { StudentCvInterface } from '../types/student';
+import { StudentCvInterface } from '../types';
 import { FiltersDto } from '../dto/recruiter.dto';
 
 @Controller('recruiter')
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
-  @Get('/students')
-  getAllStudents() {
-    return this.recruiterService.getAllStudents();
+  @Get('/students/:pageNumber')
+  getAllStudents(
+      @Param('pageNumber') pageNumber: string,
+  ) {
+    return this.recruiterService.getAllStudents(Number(pageNumber));
   }
 
   @Get('/for-interview')

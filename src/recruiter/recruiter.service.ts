@@ -5,7 +5,7 @@ import {
   AvailableStudentToListResponseInterface,
   ForInterviewStudentToListResponseInterface,
   StudentCvInterface,
-} from '../types/student';
+} from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
 import { ContractType, TypeWork } from '../enums/student.enum';
@@ -14,16 +14,29 @@ import { ContractType, TypeWork } from '../enums/student.enum';
 export class RecruiterService {
   @Inject(forwardRef(() => DataSource)) private dataSource: DataSource;
 
-  async getAllStudents() {
+  async getAllStudents(currentPage: number = 1) {
+    const maxPerPage = 2;
+    const [items, count] = await Student.findAndCount({
+      skip: maxPerPage * (currentPage - 1),
+      take: maxPerPage,
+    });
+
+    const totalPages = Math.ceil(count / maxPerPage);
+    console.log({count, totalPages})
+
     const infoAboutStudents = await this.dataSource
       .getRepository(Student)
       .createQueryBuilder('student')
       .leftJoinAndSelect('student.studentImport', 'studentImport')
       .where('studentImport.isActive = :isActive', { isActive: true })
       .andWhere('student.status = :status', { status: 'active' })
-      .getMany();
+      .orderBy('student.lastName', 'DESC')
+        .skip(maxPerPage * (currentPage - 1))
+        .take(maxPerPage)
+      .getMany()
 
     const dataToResponse: AvailableStudentToListResponseInterface[] = [];
+
 
     for (const infoAboutStudent of infoAboutStudents) {
       const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
@@ -44,7 +57,7 @@ export class RecruiterService {
       };
       dataToResponse.push(dataAboutOneStudent);
     }
-    return dataToResponse;
+    return {dataToResponse, count, totalPages};
   }
 
   async getOneRecruiterAndCompareToken(id: string, registerToken: string) {
