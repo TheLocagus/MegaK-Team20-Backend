@@ -1,5 +1,3 @@
-import { ContractType, TypeWork } from '../../enums/student.enum';
-
 export interface StudentInterface {
   id: string;
   status: string;
@@ -139,3 +137,33 @@ export type ICheckStudentIfExist =
   | {
       success: false;
     };
+
+export enum StudentTypeOfWorkEnum {
+  naMiejscu = 'Na miejscu',
+  gotowoscDoPrzeprowadzki = 'Gotowość do przeprowadzki',
+  wylacznieZdalnie = 'Wyłącznie zdalnie',
+  hybrydowo = 'Hybrydowo',
+  bezZnaczenia = 'Bez znaczenia',
+}
+
+export enum ContractType {
+  contractOfEmployment = 'contractOfEmployment',
+  b2b = 'b2b',
+  contractWork = 'contractWork',
+  contractOfMandate = 'contractOfMandate',
+  noPreference = 'noPreference',
+}
+
+export enum TypeWork {
+  stationary = 'stationary',
+  readyToMove = 'readyToMove',
+  remotely = 'remotely',
+  hybrid = 'hybrid',
+  noPreference = 'noPreference',
+}
+
+export enum RecruiterActionsOfStatusEnum {
+  noInterested = 'no-interested',
+  forInterview = 'for-interview',
+  employed = 'employed',
+}

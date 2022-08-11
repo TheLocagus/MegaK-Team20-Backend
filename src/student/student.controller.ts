@@ -8,8 +8,9 @@ import {
   Post,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
-import { GetOneStudentResponseInterface } from '../types/student';
-import { CreateStudentDto, UpdateStudentDto } from '../dto/create-student.dto';
+import { GetOneStudentResponseInterface, ICheckStudentIfExist } from '../types';
+import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateStudentDto } from './dto/update-student.dto';
 
 @Controller('student')
 export class StudentController {
@@ -26,17 +27,21 @@ export class StudentController {
   getOneStudentAndCompareToken(
     @Param('id') id: string,
     @Param('registerToken') registerToken: string,
-  ) {
+  ): Promise<ICheckStudentIfExist> {
     return this.studentService.getOneStudentAndCompareToken(id, registerToken);
   }
-
 
   @Post('/register/:id/')
   createStudent(
     @Param('id') id: string,
+    @Param('registerToken') registerToken: string,
     @Body() createStudentDto: CreateStudentDto,
   ) {
-    return this.studentService.createStudent(id, createStudentDto);
+    return this.studentService.createStudent(
+      id,
+      registerToken,
+      createStudentDto,
+    );
   }
 
   @Patch('/:id')
