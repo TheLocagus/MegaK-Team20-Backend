@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
-import { StudentCvInterface } from '../types/student';
+import { StudentCvInterface } from '../types';
 import { FiltersDto } from '../dto/recruiter.dto';
-import { RecruiterActionsOfStatusEnum } from '../enums/student.enum';
+import { RecruiterActionsOfStatusEnum } from '../types/recruiter';
 
 export interface StatusResponse {
   status: RecruiterActionsOfStatusEnum;
@@ -50,7 +50,7 @@ export class RecruiterController {
 
   @Get('/students/:searchedPhrase')
   getAllWithSearchedPhrase(
-    @Param('searchedPhrase') searchedPhrase: string | number
+    @Param('searchedPhrase') searchedPhrase: string | number,
   ) {
     return this.recruiterService.getAllWithSearchedPhrase(searchedPhrase);
   }

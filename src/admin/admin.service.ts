@@ -23,6 +23,9 @@ export class AdminService {
   async importStudents(files: MulterDiskUploadedFiles) {
     const fileProperty = files?.testData?.[0] ?? null;
     const students: StudentToImport[] = [];
+    let modifiedImportedStudents = 0;
+    let newImportedStudents = 0;
+    let errorImportedStudents = 0;
 
     try {
       if (
@@ -42,7 +45,7 @@ export class AdminService {
         if (isStudentToImport(element)) {
           students.push(element);
         } else {
-          throw new Error('File has not proper data');
+          errorImportedStudents++;
         }
       });
 
@@ -71,7 +74,7 @@ export class AdminService {
               'Kursancie',
             ),
           );
-
+          newImportedStudents++;
           await importedStudent.save();
         } else {
           await this.dataSource
@@ -86,6 +89,7 @@ export class AdminService {
             })
             .where('email = :email', { email: student.email })
             .execute();
+          modifiedImportedStudents++;
         }
       }
 
@@ -96,6 +100,9 @@ export class AdminService {
       return {
         success: true,
         message: 'Importing students finished successfully',
+        newImportedStudents,
+        modifiedImportedStudents,
+        errorImportedStudents,
       };
     } catch (error) {
       try {
