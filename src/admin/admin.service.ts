@@ -59,7 +59,7 @@ export class AdminService {
           importedStudent.courseEngagement = student.courseEngagment;
           importedStudent.projectDegree = student.projectDegree;
           importedStudent.teamProjectDegree = student.teamProjectDegree;
-          importedStudent.isActive = true; //true dla testów
+          importedStudent.isActive = false;
           importedStudent.registerToken = token;
 
           await this.mailService.sendMail(
@@ -124,7 +124,6 @@ export class AdminService {
       importedRecruiter.company = recruiter.company;
       importedRecruiter.maxReservedStudents = recruiter.maxReservedStudents;
       importedRecruiter.isActive = false;
-      await importedRecruiter.save();
 
       await this.mailService.sendMail(
         importedRecruiter.email,
@@ -135,6 +134,8 @@ export class AdminService {
           'Rekruterze',
         ),
       );
+      await importedRecruiter.save();
+
       return {
         success: true,
         message: 'Recruiter saved successfully',

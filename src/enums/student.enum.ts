@@ -21,3 +21,9 @@ export enum TypeWork {
   hybrid = 'hybrid',
   noPreference = 'noPreference',
 }
+
+export enum RecruiterActionsOfStatusEnum {
+  noInterested = 'no-interested',
+  forInterview = 'for-interview',
+  employed = 'employed',
+}

@@ -106,6 +106,7 @@ export interface ForInterviewStudentToListResponseInterface {
   teamProjectDegree: number;
   githubUsername: string;
   endOfReservation: Date;
+  avatarUrl: string;
 }
 
 export interface CreateStudentResponse {
