@@ -22,7 +22,6 @@ export class RecruiterService {
     });
 
     const totalPages = Math.ceil(count / maxPerPage);
-    console.log({count, totalPages})
 
     const infoAboutStudents = await this.dataSource
       .getRepository(Student)
