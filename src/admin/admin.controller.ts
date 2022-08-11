@@ -11,7 +11,6 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { storageDir } from '../utils/storage';
 import * as path from 'path';
 import { MulterDiskUploadedFiles } from '../interfaces/files';
-import { StudentToImport } from '../interfaces/student-to-import';
 
 @Controller('admin')
 export class AdminController {
@@ -22,7 +21,7 @@ export class AdminController {
     FileFieldsInterceptor(
       [
         {
-          name: 'testData',
+          name: 'file',
           maxCount: 1,
         },
       ],
