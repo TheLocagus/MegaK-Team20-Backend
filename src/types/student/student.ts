@@ -1,5 +1,3 @@
-import { ContractType, TypeWork } from '../../enums/student.enum';
-
 export interface StudentInterface {
   id: string;
   status: string;
@@ -106,6 +104,7 @@ export interface ForInterviewStudentToListResponseInterface {
   teamProjectDegree: number;
   githubUsername: string;
   endOfReservation: Date;
+  avatarUrl: string;
 }
 
 export interface CreateStudentResponse {
@@ -126,4 +125,39 @@ export interface CreateStudentResponse {
   targetWorkCity: string;
   telephone: string;
   workExperience: string;
+}
+
+export type ICheckStudentIfExist =
+  | {
+      success: true;
+      id: string;
+      registerToken: string;
+      role: 'student';
+    }
+  | {
+      success: false;
+    };
+
+export enum StudentTypeOfWorkEnum {
+  naMiejscu = 'Na miejscu',
+  gotowoscDoPrzeprowadzki = 'Gotowość do przeprowadzki',
+  wylacznieZdalnie = 'Wyłącznie zdalnie',
+  hybrydowo = 'Hybrydowo',
+  bezZnaczenia = 'Bez znaczenia',
+}
+
+export enum ContractType {
+  contractOfEmployment = 'contractOfEmployment',
+  b2b = 'b2b',
+  contractWork = 'contractWork',
+  contractOfMandate = 'contractOfMandate',
+  noPreference = 'noPreference',
+}
+
+export enum TypeWork {
+  stationary = 'stationary',
+  readyToMove = 'readyToMove',
+  remotely = 'remotely',
+  hybrid = 'hybrid',
+  noPreference = 'noPreference',
 }

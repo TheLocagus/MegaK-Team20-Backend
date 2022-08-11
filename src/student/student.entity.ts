@@ -8,9 +8,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Recruiter } from '../recruiter/recruiter.entity';
-import { StudentInterface } from '../types/student';
+import { ContractType, StudentInterface, TypeWork } from '../types';
 import { StudentImport } from '../studentImport/studentImport.entity';
-import { ContractType, TypeWork } from '../enums/student.enum';
 
 export enum UserStatus {
   active = 'active',
@@ -132,7 +131,7 @@ export class Student extends BaseEntity implements StudentInterface {
   studentImport: StudentImport;
 
   @Column({
-    type: 'datetime',
+    type: 'date',
     default: null,
   })
   endOfReservation: Date | null;

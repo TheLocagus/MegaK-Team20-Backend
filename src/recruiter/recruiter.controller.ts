@@ -2,6 +2,11 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
 import { StudentCvInterface } from '../types';
 import { FiltersDto } from '../dto/recruiter.dto';
+import { RecruiterActionsOfStatusEnum } from '../types/recruiter';
+
+export interface StatusResponse {
+  status: RecruiterActionsOfStatusEnum;
+}
 
 @Controller('recruiter')
 export class RecruiterController {
@@ -36,12 +41,19 @@ export class RecruiterController {
   }
 
   @Patch('/:id')
-  changeStatus(@Param('id') id: string, @Body() status: { status: string }) {
+  changeStatus(@Param('id') id: string, @Body() status: StatusResponse) {
     return this.recruiterService.changeStatus(id, status.status);
   }
 
   @Get('/cv/:id')
   getOneStudentCv(@Param('id') id: string): Promise<StudentCvInterface> {
     return this.recruiterService.getOneStudentCv(id);
+  }
+
+  @Get('/students/:searchedPhrase')
+  getAllWithSearchedPhrase(
+    @Param('searchedPhrase') searchedPhrase: string | number,
+  ) {
+    return this.recruiterService.getAllWithSearchedPhrase(searchedPhrase);
   }
 }

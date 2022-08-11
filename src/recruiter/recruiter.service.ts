@@ -3,15 +3,22 @@ import { DataSource } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
 import {
   AvailableStudentToListResponseInterface,
+  ContractType,
   ForInterviewStudentToListResponseInterface,
   StudentCvInterface,
+  TypeWork,
 } from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
-import { ContractType, TypeWork } from '../enums/student.enum';
+
+import { StudentImport } from '../studentImport/studentImport.entity';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom, map, tap } from 'rxjs';
+import { RecruiterActionsOfStatusEnum } from '../types/recruiter';
 
 @Injectable()
 export class RecruiterService {
+  constructor(private readonly httpService: HttpService) {}
   @Inject(forwardRef(() => DataSource)) private dataSource: DataSource;
 
   async getAllStudents(currentPage = 1) {
@@ -72,10 +79,10 @@ export class RecruiterService {
         };
   }
 
-  async changeStatus(id: string, status: string) {
+  async changeStatus(id: string, status: RecruiterActionsOfStatusEnum) {
     //@TODO ewentualna zmiana nazewnictwa w case'ach
     //@TODO lepsza walidacja błędów
-
+    const foundStudentImport = await StudentImport.findOneBy({ id });
     const foundStudent = await Student.findOne({
       where: {
         studentImport: {
@@ -86,7 +93,7 @@ export class RecruiterService {
 
     try {
       switch (status) {
-        case 'duringTalk': {
+        case `${RecruiterActionsOfStatusEnum.forInterview}`: {
           const reservationTimestamp =
             new Date().getTime() + 10 * 24 * 60 * 60 * 1000;
 
@@ -95,7 +102,7 @@ export class RecruiterService {
           await foundStudent.save();
           break;
         }
-        case 'noInterested': {
+        case `${RecruiterActionsOfStatusEnum.noInterested}`: {
           foundStudent.endOfReservation
             ? (foundStudent.endOfReservation = null)
             : null;
@@ -103,14 +110,14 @@ export class RecruiterService {
           await foundStudent.save();
           break;
         }
-        case 'employed': {
+        case `${RecruiterActionsOfStatusEnum.employed}`: {
           foundStudent.status = UserStatus.employed;
-
+          foundStudentImport.isActive = false;
           foundStudent.endOfReservation
             ? (foundStudent.endOfReservation = null)
             : null;
-          //@TODO tu jest ok, natomiast żeby cała funkcjonalność działała, kursant musi samodzielnie potwierdzić w profilu że został zatrudniony
           await foundStudent.save();
+          await foundStudentImport.save();
           break;
         }
         default: {
@@ -139,6 +146,18 @@ export class RecruiterService {
     const dataToResponse: ForInterviewStudentToListResponseInterface[] = [];
 
     for (const student of students) {
+      // fetch
+      let avatarUrl = '';
+      try {
+        const avatarData = await firstValueFrom(
+          this.httpService.get(
+            `https://api.github.com/users/${student.githubUsername}`,
+          ),
+        );
+        avatarUrl = avatarData.data.avatar_url;
+      } catch (e) {
+        avatarUrl = '';
+      }
       const studentInfo: ForInterviewStudentToListResponseInterface = {
         id: student.studentImport.id,
         courseCompletion: student.studentImport.courseCompletion,
@@ -155,6 +174,7 @@ export class RecruiterService {
         monthsOfCommercialExp: student.monthsOfCommercialExp,
         canTakeApprenticeship: student.canTakeApprenticeship,
         endOfReservation: student.endOfReservation,
+        avatarUrl,
       };
       dataToResponse.push(studentInfo);
     }
@@ -193,6 +213,39 @@ export class RecruiterService {
       email: oneStudent.studentImport.email,
       telephone: oneStudent.telephone,
     };
+  }
+
+  async getAllWithSearchedPhrase(searchedPhrase: string | number) {
+    const infoAboutStudents = await this.dataSource
+      .getRepository(Student)
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .where('student.targetWorkCity = :searchedPhrase', { searchedPhrase })
+      .getMany();
+
+    const dataToResponse: AvailableStudentToListResponseInterface[] = [];
+
+    for (const infoAboutStudent of infoAboutStudents) {
+      const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
+        id: infoAboutStudent.studentImport.id,
+        courseCompletion: infoAboutStudent.studentImport.courseCompletion,
+        courseEngagement: infoAboutStudent.studentImport.courseEngagement,
+        teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
+        projectDegree: infoAboutStudent.studentImport.projectDegree,
+        canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
+        expectedContractType: infoAboutStudent.expectedContractType,
+        expectedSalary: infoAboutStudent.expectedSalary,
+        expectedTypeWork: infoAboutStudent.expectedTypeWork,
+        firstName: infoAboutStudent.firstName,
+        lastName: `${infoAboutStudent.lastName[0]}.`,
+        monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
+        targetWorkCity: infoAboutStudent.targetWorkCity,
+        status: infoAboutStudent.status,
+      };
+      dataToResponse.push(dataAboutOneStudent);
+    }
+    console.log(infoAboutStudents);
+    return dataToResponse;
   }
 
   async filterListWithAllStudents(filters: FiltersDto) {

@@ -23,6 +23,9 @@ export class AdminService {
   async importStudents(files: MulterDiskUploadedFiles) {
     const fileProperty = files?.testData?.[0] ?? null;
     const students: StudentToImport[] = [];
+    let modifiedImportedStudents = 0;
+    let newImportedStudents = 0;
+    let errorImportedStudents = 0;
 
     try {
       if (
@@ -42,7 +45,7 @@ export class AdminService {
         if (isStudentToImport(element)) {
           students.push(element);
         } else {
-          throw new Error('File has not proper data');
+          errorImportedStudents++;
         }
       });
 
@@ -59,7 +62,7 @@ export class AdminService {
           importedStudent.courseEngagement = student.courseEngagment;
           importedStudent.projectDegree = student.projectDegree;
           importedStudent.teamProjectDegree = student.teamProjectDegree;
-          importedStudent.isActive = true; //true dla testów
+          importedStudent.isActive = false;
           importedStudent.registerToken = token;
 
           await this.mailService.sendMail(
@@ -71,7 +74,7 @@ export class AdminService {
               'Kursancie',
             ),
           );
-
+          newImportedStudents++;
           await importedStudent.save();
         } else {
           await this.dataSource
@@ -86,6 +89,7 @@ export class AdminService {
             })
             .where('email = :email', { email: student.email })
             .execute();
+          modifiedImportedStudents++;
         }
       }
 
@@ -96,6 +100,9 @@ export class AdminService {
       return {
         success: true,
         message: 'Importing students finished successfully',
+        newImportedStudents,
+        modifiedImportedStudents,
+        errorImportedStudents,
       };
     } catch (error) {
       try {
@@ -124,7 +131,6 @@ export class AdminService {
       importedRecruiter.company = recruiter.company;
       importedRecruiter.maxReservedStudents = recruiter.maxReservedStudents;
       importedRecruiter.isActive = false;
-      await importedRecruiter.save();
 
       await this.mailService.sendMail(
         importedRecruiter.email,
@@ -135,6 +141,8 @@ export class AdminService {
           'Rekruterze',
         ),
       );
+      await importedRecruiter.save();
+
       return {
         success: true,
         message: 'Recruiter saved successfully',
