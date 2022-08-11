@@ -12,9 +12,11 @@ export interface StatusResponse {
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
-  @Get('/students')
-  getAllStudents() {
-    return this.recruiterService.getAllStudents();
+  @Get('/students/:pageNumber')
+  getAllStudents(
+      @Param('pageNumber') pageNumber: string,
+  ) {
+    return this.recruiterService.getAllStudents(Number(pageNumber));
   }
 
   @Get('/for-interview')
