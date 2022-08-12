@@ -68,11 +68,7 @@ export class AdminService {
           await this.mailService.sendMail(
             importedStudent.email,
             'Aktywacja konta MegaK Head Hunters',
-            registeredStudentInfoEmailTemplate(
-              importedStudent.id,
-              token,
-              'Kursancie',
-            ),
+            registeredStudentInfoEmailTemplate(importedStudent.id, token),
           );
           newImportedStudents++;
           await importedStudent.save();
@@ -135,11 +131,7 @@ export class AdminService {
       await this.mailService.sendMail(
         importedRecruiter.email,
         'Aktywacja konta MegaK Head Hunters',
-        registeredStudentInfoEmailTemplate(
-          importedRecruiter.id,
-          token,
-          'Rekruterze',
-        ),
+        registeredStudentInfoEmailTemplate(importedRecruiter.id, token),
       );
       await importedRecruiter.save();
 

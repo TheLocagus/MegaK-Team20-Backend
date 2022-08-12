@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { AdminInterface } from '../types/admin';
+import { AdminInterface } from '../types';
 
 @Entity()
 export class Admin extends BaseEntity implements AdminInterface {
@@ -13,6 +13,11 @@ export class Admin extends BaseEntity implements AdminInterface {
 
   @Column()
   pwdHash: string;
+
+  @Column({
+    nullable: true,
+  })
+  registerToken: string;
 
   @Column({
     nullable: true,
