@@ -15,13 +15,15 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { RecruiterActionsOfStatusEnum } from '../types/recruiter';
 
+const MAX_PER_PAGE = 1;
+
 @Injectable()
 export class RecruiterService {
   constructor(private readonly httpService: HttpService) {}
   @Inject(forwardRef(() => DataSource)) private dataSource: DataSource;
 
   async getAllStudents(currentPage = 1) {
-    const maxPerPage = 5;
+    const maxPerPage = MAX_PER_PAGE;
     const [items, count] = await Student.findAndCount({
       relations: {
         studentImport: true,
@@ -211,40 +213,78 @@ export class RecruiterService {
     };
   }
 
-  async getAllWithSearchedPhrase(searchedPhrase: string | number) {
-    const infoAboutStudents = await this.dataSource
-      .getRepository(Student)
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.studentImport', 'studentImport')
-      .where('student.targetWorkCity = :searchedPhrase', { searchedPhrase })
-      .getMany();
+  async getAllWithSearchedPhrase(searchedPhrase: string, numberOfPage: number) {
+    const maxPerPage = MAX_PER_PAGE;
+    // const infoAboutStudents = await this.dataSource
+    //   .getRepository(Student)
+    //   .createQueryBuilder('student')
+    //   .leftJoinAndSelect('student.studentImport', 'studentImport')
+    //   .where('student.targetWorkCity = :searchedPhrase', { searchedPhrase })
+    //   .take(maxPerPage)
+    //   .skip(maxPerPage * (numberOfPage - 1))
+    //   .getMany();
+    const [items, count] = await Student.findAndCount({
+      relations: {
+        studentImport: true,
+      },
+      select: {
+        id: true,
+        status: true,
+        firstName: true,
+        lastName: true,
+        expectedTypeWork: true,
+        targetWorkCity: true,
+        expectedContractType: true,
+        expectedSalary: true,
+        canTakeApprenticeship: true,
+        monthsOfCommercialExp: true,
+        studentImport: {
+          courseCompletion: true,
+          courseEngagement: true,
+          projectDegree: true,
+          teamProjectDegree: true,
+          id: true,
+        },
+      },
+      where: {
+        status: UserStatus.active,
+        targetWorkCity: searchedPhrase,
+        studentImport: {
+          isActive: true,
+        },
+      },
+      skip: maxPerPage * (numberOfPage - 1),
+      take: maxPerPage,
+    });
 
-    const dataToResponse: AvailableStudentToListResponseInterface[] = [];
+    // const items: AvailableStudentToListResponseInterface[] = [];
 
-    for (const infoAboutStudent of infoAboutStudents) {
-      const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
-        id: infoAboutStudent.studentImport.id,
-        courseCompletion: infoAboutStudent.studentImport.courseCompletion,
-        courseEngagement: infoAboutStudent.studentImport.courseEngagement,
-        teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
-        projectDegree: infoAboutStudent.studentImport.projectDegree,
-        canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
-        expectedContractType: infoAboutStudent.expectedContractType,
-        expectedSalary: infoAboutStudent.expectedSalary,
-        expectedTypeWork: infoAboutStudent.expectedTypeWork,
-        firstName: infoAboutStudent.firstName,
-        lastName: infoAboutStudent.lastName,
-        monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
-        targetWorkCity: infoAboutStudent.targetWorkCity,
-        status: infoAboutStudent.status,
-      };
-      dataToResponse.push(dataAboutOneStudent);
-    }
-    console.log(infoAboutStudents);
-    return dataToResponse;
+    // for (const infoAboutStudent of infoAboutStudents) {
+    //   const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
+    //     id: infoAboutStudent.id,
+    //     courseCompletion: infoAboutStudent.studentImport.courseCompletion,
+    //     courseEngagement: infoAboutStudent.studentImport.courseEngagement,
+    //     teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
+    //     projectDegree: infoAboutStudent.studentImport.projectDegree,
+    //     canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
+    //     expectedContractType: infoAboutStudent.expectedContractType,
+    //     expectedSalary: infoAboutStudent.expectedSalary,
+    //     expectedTypeWork: infoAboutStudent.expectedTypeWork,
+    //     firstName: infoAboutStudent.firstName,
+    //     lastName: infoAboutStudent.lastName,
+    //     monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
+    //     targetWorkCity: infoAboutStudent.targetWorkCity,
+    //     status: infoAboutStudent.status,
+    //   };
+    //   items.push(dataAboutOneStudent);
+    // }
+
+    const totalPages = Math.ceil(count / maxPerPage);
+    return { count, items, totalPages };
   }
 
   async filterListWithAllStudents(filters: FiltersDto) {
+    const maxPerPage = MAX_PER_PAGE;
     const {
       contractType,
       codeRate,
@@ -272,8 +312,7 @@ export class RecruiterService {
       TypeWork.remotely,
       TypeWork.noPreference,
     ];
-
-    return await this.dataSource
+    const items = await this.dataSource
       .getRepository(Student)
       .createQueryBuilder('student')
       .leftJoinAndSelect('student.studentImport', 'studentImport')
@@ -327,6 +366,13 @@ export class RecruiterService {
         activityRate:
           activityRate.length !== 0 ? activityRate : ifNoFilteredRatios,
       })
+      // .take(maxPerPage)
+      // .skip(maxPerPage * (currentPage - 1))
       .getMany();
+
+    // const count = items.length;
+    // const totalPages = Math.ceil(count / maxPerPage);
+    // return { count, items, totalPages };
+    return items;
   }
 }

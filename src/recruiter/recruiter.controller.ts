@@ -25,7 +25,7 @@ export class RecruiterController {
     return this.recruiterService.getForInterviewStudents();
   }
 
-  @Get('/filter')
+  @Get('/:numberOfPage/filter')
   filterListWithAllStudents(@Body() filters: FiltersDto) {
     return this.recruiterService.filterListWithAllStudents(filters);
   }
@@ -52,11 +52,15 @@ export class RecruiterController {
     return this.recruiterService.getOneStudentCv(id);
   }
 
-  @Get('/students/:searchedPhrase')
+  @Get('/:numberOfPage/:searchedPhrase')
   getAllWithSearchedPhrase(
-    @Param('searchedPhrase') searchedPhrase: string | number,
+    @Param('searchedPhrase') searchedPhrase: string,
+    @Param('numberOfPage') numberOfPage: number,
   ) {
-    return this.recruiterService.getAllWithSearchedPhrase(searchedPhrase);
+    return this.recruiterService.getAllWithSearchedPhrase(
+      searchedPhrase,
+      numberOfPage,
+    );
   }
 
   @Get('/redirect')
