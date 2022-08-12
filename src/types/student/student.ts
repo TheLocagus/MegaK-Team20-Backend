@@ -47,6 +47,7 @@ export interface GetOneStudentResponseInterface {
   courseCompletion: number;
 }
 
+
 export interface CreateStudentResponse {
   pwdHash: string;
   bio: string;

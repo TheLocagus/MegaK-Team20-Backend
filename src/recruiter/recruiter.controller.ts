@@ -17,6 +17,7 @@ export interface StatusResponse {
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
+
   @Get('/students/filter')
   filterListWithAllStudents(@Query() filters: FiltersDto) {
     return this.recruiterService.filterListWithAllStudents(filters);

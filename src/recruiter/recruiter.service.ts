@@ -9,7 +9,6 @@ import {
 } from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
-
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map, tap } from 'rxjs';
@@ -26,9 +25,11 @@ export class RecruiterService {
   constructor(private readonly httpService: HttpService) {}
   @Inject(forwardRef(() => DataSource)) private dataSource: DataSource;
 
+
   async getAllStudents(
     currentPage = 1,
   ): Promise<IAvailableStudentToListResponse> {
+
     const maxPerPage = 2;
     const [items, count] = await Student.findAndCount({
       relations: {
@@ -62,6 +63,7 @@ export class RecruiterService {
       take: maxPerPage,
     });
 
+
     const availableStudents: AvailableStudentToListResponseInterface[] =
       items.map((student) => {
         return {
@@ -81,7 +83,19 @@ export class RecruiterService {
         };
       });
 
+
     const totalPages = Math.ceil(count / maxPerPage);
+    return { availableStudents, count, totalPages };
+  }
+  
+  async getOneRecruiterAndCompareToken(id: string, registerToken: string) {
+    const oneRecruiter = await this.dataSource
+      .getRepository(Recruiter)
+      .createQueryBuilder('recruiter')
+      .where('recruiter.id = :id', { id })
+      .andWhere('recruiter.registerToken = :registerToken', { registerToken })
+      .getOne();
+
 
     return { availableStudents, count, totalPages };
   }
@@ -159,6 +173,7 @@ export class RecruiterService {
 
     const totalPages = Math.ceil(count / maxPerPage);
 
+
     return { studentsToTalk, count, totalPages };
   }
 
@@ -194,6 +209,7 @@ export class RecruiterService {
         courses: oneStudent.courses,
         email: oneStudent.studentImport.email,
         telephone: oneStudent.telephone,
+
       };
     }
   }
