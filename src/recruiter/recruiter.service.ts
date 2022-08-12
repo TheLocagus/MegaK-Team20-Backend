@@ -12,7 +12,7 @@ import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom, map, tap } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { RecruiterActionsOfStatusEnum } from '../types/recruiter';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class RecruiterService {
   @Inject(forwardRef(() => DataSource)) private dataSource: DataSource;
 
   async getAllStudents(currentPage = 1) {
-    const maxPerPage = 2;
+    const maxPerPage = 5;
     const [items, count] = await Student.findAndCount({
       relations: {
         studentImport: true,
@@ -42,6 +42,7 @@ export class RecruiterService {
           courseEngagement: true,
           projectDegree: true,
           teamProjectDegree: true,
+          id: true,
         },
       },
       where: {
@@ -76,7 +77,6 @@ export class RecruiterService {
   }
 
   async changeStatus(id: string, status: RecruiterActionsOfStatusEnum) {
-    //@TODO ewentualna zmiana nazewnictwa w case'ach
     //@TODO lepsza walidacja błędów
     const foundStudentImport = await StudentImport.findOneBy({ id });
     const foundStudent = await Student.findOne({
@@ -90,6 +90,7 @@ export class RecruiterService {
     try {
       switch (status) {
         case `${RecruiterActionsOfStatusEnum.forInterview}`: {
+          console.log(foundStudent);
           const reservationTimestamp =
             new Date().getTime() + 10 * 24 * 60 * 60 * 1000;
 
@@ -232,7 +233,7 @@ export class RecruiterService {
         expectedSalary: infoAboutStudent.expectedSalary,
         expectedTypeWork: infoAboutStudent.expectedTypeWork,
         firstName: infoAboutStudent.firstName,
-        lastName: `${infoAboutStudent.lastName[0]}.`,
+        lastName: infoAboutStudent.lastName,
         monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
         targetWorkCity: infoAboutStudent.targetWorkCity,
         status: infoAboutStudent.status,

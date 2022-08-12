@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Redirect,
+} from '@nestjs/common';
 import { RecruiterService } from './recruiter.service';
 import { StudentCvInterface } from '../types';
 import { FiltersDto } from '../dto/recruiter.dto';
@@ -11,13 +19,6 @@ export interface StatusResponse {
 @Controller('recruiter')
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
-
-  @Get('/students/:pageNumber')
-  getAllStudents(
-      @Param('pageNumber') pageNumber: string,
-  ) {
-    return this.recruiterService.getAllStudents(Number(pageNumber));
-  }
 
   @Get('/for-interview')
   getForInterviewStudents() {
@@ -42,6 +43,7 @@ export class RecruiterController {
 
   @Patch('/:id')
   changeStatus(@Param('id') id: string, @Body() status: StatusResponse) {
+    console.log('STATUS TO: ', status);
     return this.recruiterService.changeStatus(id, status.status);
   }
 
@@ -55,5 +57,16 @@ export class RecruiterController {
     @Param('searchedPhrase') searchedPhrase: string | number,
   ) {
     return this.recruiterService.getAllWithSearchedPhrase(searchedPhrase);
+  }
+
+  @Get('/redirect')
+  @Redirect('http://www.localhost:3000/recruiter/1', 301)
+  redirect() {
+    return {};
+  }
+
+  @Get('/:pageNumber')
+  getAllStudents(@Param('pageNumber') pageNumber: string) {
+    return this.recruiterService.getAllStudents(Number(pageNumber));
   }
 }
