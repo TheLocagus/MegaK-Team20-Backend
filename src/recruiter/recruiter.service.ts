@@ -215,14 +215,7 @@ export class RecruiterService {
 
   async getAllWithSearchedPhrase(searchedPhrase: string, numberOfPage: number) {
     const maxPerPage = MAX_PER_PAGE;
-    // const infoAboutStudents = await this.dataSource
-    //   .getRepository(Student)
-    //   .createQueryBuilder('student')
-    //   .leftJoinAndSelect('student.studentImport', 'studentImport')
-    //   .where('student.targetWorkCity = :searchedPhrase', { searchedPhrase })
-    //   .take(maxPerPage)
-    //   .skip(maxPerPage * (numberOfPage - 1))
-    //   .getMany();
+
     const [items, count] = await Student.findAndCount({
       relations: {
         studentImport: true,
@@ -256,28 +249,6 @@ export class RecruiterService {
       skip: maxPerPage * (numberOfPage - 1),
       take: maxPerPage,
     });
-
-    // const items: AvailableStudentToListResponseInterface[] = [];
-
-    // for (const infoAboutStudent of infoAboutStudents) {
-    //   const dataAboutOneStudent: AvailableStudentToListResponseInterface = {
-    //     id: infoAboutStudent.id,
-    //     courseCompletion: infoAboutStudent.studentImport.courseCompletion,
-    //     courseEngagement: infoAboutStudent.studentImport.courseEngagement,
-    //     teamProjectDegree: infoAboutStudent.studentImport.teamProjectDegree,
-    //     projectDegree: infoAboutStudent.studentImport.projectDegree,
-    //     canTakeApprenticeship: infoAboutStudent.canTakeApprenticeship,
-    //     expectedContractType: infoAboutStudent.expectedContractType,
-    //     expectedSalary: infoAboutStudent.expectedSalary,
-    //     expectedTypeWork: infoAboutStudent.expectedTypeWork,
-    //     firstName: infoAboutStudent.firstName,
-    //     lastName: infoAboutStudent.lastName,
-    //     monthsOfCommercialExp: infoAboutStudent.monthsOfCommercialExp,
-    //     targetWorkCity: infoAboutStudent.targetWorkCity,
-    //     status: infoAboutStudent.status,
-    //   };
-    //   items.push(dataAboutOneStudent);
-    // }
 
     const totalPages = Math.ceil(count / maxPerPage);
     return { count, items, totalPages };
