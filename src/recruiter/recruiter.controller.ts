@@ -1,4 +1,17 @@
-import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
+
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Redirect,
+} from '@nestjs/common';
+
+import { Body, Controller, Get, Param, Patch, Query, Post,
+  Redirect } from '@nestjs/common';
+
 import { RecruiterService } from './recruiter.service';
 import { FiltersDto } from '../dto/recruiter.dto';
 import {
@@ -18,31 +31,38 @@ export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
 
-  @Get('/students/filter')
-  filterListWithAllStudents(@Query() filters: FiltersDto) {
+  @Get('/for-interview')
+  getForInterviewStudents() {
+    return this.recruiterService.getForInterviewStudents();
+  }
+
+  @Get('/:numberOfPage/filter')
+  filterListWithAllStudents(@Body() filters: FiltersDto) {
     return this.recruiterService.filterListWithAllStudents(filters);
-  }
 
-  @Get('/students/search/:searchedPhrase')
+
+  @Get('/:numberOfPage/:searchedPhrase')
   getAllWithSearchedPhrase(
-    @Param('searchedPhrase') searchedPhrase: string | number,
+    @Param('searchedPhrase') searchedPhrase: string,
+    @Param('numberOfPage') numberOfPage: number,
   ) {
-    return this.recruiterService.getAllWithSearchedPhrase(searchedPhrase);
+    return this.recruiterService.getAllWithSearchedPhrase(
+      searchedPhrase,
+      numberOfPage,
+    );
   }
 
-  @Get('/students/for-interview/:pageNumber')
-  getForInterviewStudents(
-    @Param('pageNumber') pageNumber: string,
-  ): Promise<IForInterviewStudentToListResponse> {
-    return this.recruiterService.getForInterviewStudents(Number(pageNumber));
+  @Get('/for-interview')
+  getForInterviewStudents() {
+    return this.recruiterService.getForInterviewStudents();
   }
 
-  @Get('/students/cv/:id')
+  @Get('/cv/:id')
   getOneStudentCv(@Param('id') id: string): Promise<ISingleStudentCvResponse> {
     return this.recruiterService.getOneStudentCv(id);
   }
 
-  @Get('/students/:pageNumber')
+  @Get('/:pageNumber')
   getAllStudents(
     @Param('pageNumber') pageNumber: string,
   ): Promise<IAvailableStudentToListResponse> {
@@ -60,7 +80,7 @@ export class RecruiterController {
     );
   }
 
-  @Patch('/students/:id')
+  @Patch('/:id')
   changeStatus(@Param('id') id: string, @Body() status: StatusResponse) {
     return this.recruiterService.changeStatus(id, status.status);
   }
