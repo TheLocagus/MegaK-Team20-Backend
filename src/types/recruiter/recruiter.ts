@@ -79,12 +79,12 @@ export interface ISingleStudentCvResponse {
 
 export type ICheckRecruiterIfExist =
   | {
-      success: true;
+      success: boolean;
       id: string;
       role: 'recruiter';
     }
   | {
-      success: false;
+      success: boolean;
     };
 
 export enum RecruiterActionsOfStatusEnum {
