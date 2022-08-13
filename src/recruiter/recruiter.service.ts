@@ -1,23 +1,17 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
-import {
-  ContractType,
-  ICheckRecruiterIfExist,
-  ISingleStudentCvResponse,
-  TypeWork,
-} from '../types';
+import { ContractType, ISingleStudentCvResponse, TypeWork } from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
 
-import { firstValueFrom, map, tap } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import {
   AvailableStudentToListResponseInterface,
   ForInterviewStudentToListResponseInterface,
   IAvailableStudentToListResponse,
-  IForInterviewStudentToListResponse,
   RecruiterActionsOfStatusEnum,
 } from '../types';
 
@@ -216,7 +210,7 @@ export class RecruiterService {
       .leftJoinAndSelect('student.studentImport', 'studentImport')
       .where('studentImport.id = :id', { id })
       .getOne();
-    console.log('TRUBDINDPUNDPNDSJNOJSOJDO()I@(I@@')
+    console.log('TRUBDINDPUNDPNDSJNOJSOJDO()I@(I@@');
     return {
       firstName: oneStudent.firstName,
       lastName: oneStudent.lastName,

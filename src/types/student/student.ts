@@ -3,7 +3,6 @@ export interface StudentInterface {
   status: string;
   pwdHash: string;
   currentTokenId: string | null;
-  recruiterId: object;
   telephone: string;
   firstName: string;
   lastName: string;
