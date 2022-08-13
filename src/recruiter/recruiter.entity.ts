@@ -64,5 +64,5 @@ export class Recruiter extends BaseEntity implements RecruiterInterface {
     () => RecruiterToStudent,
     (recruiterToStudent) => recruiterToStudent.recruiter,
   )
-  public recruiterToStudents!: RecruiterToStudent[];
+  public recruiterToStudents: RecruiterToStudent[];
 }

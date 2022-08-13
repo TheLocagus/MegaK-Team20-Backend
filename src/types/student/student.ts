@@ -20,7 +20,6 @@ export interface StudentInterface {
   workExperience: string;
   courses: string;
   studentImport: object;
-  endOfReservation: Date | null;
 }
 
 export interface GetOneStudentResponseInterface {
