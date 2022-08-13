@@ -12,6 +12,7 @@ import { StudentToImport } from '../interfaces/student-to-import';
 import { isStudentToImport } from '../utils/is-student-to-import';
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { DataSource } from 'typeorm';
+import { registeredRecruiterInfoEmailTemplate } from '../templates/email/registered-recruiter-info';
 
 @Injectable()
 export class AdminService {
@@ -132,7 +133,7 @@ export class AdminService {
       await this.mailService.sendMail(
         importedRecruiter.email,
         'Aktywacja konta MegaK Head Hunters',
-        registeredStudentInfoEmailTemplate(importedRecruiter.id, token),
+        registeredRecruiterInfoEmailTemplate(importedRecruiter.id, token),
       );
       await importedRecruiter.save();
 
