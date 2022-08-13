@@ -11,11 +11,18 @@ import { JwtPayload } from './strategy/admin.strategy';
 import { sign } from 'jsonwebtoken';
 import { configCookie } from '../config/configCookie.example';
 import { salt } from '../config/config-salt';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { LookForUser } from './look-for-user.service';
+import { MailService } from '../mail/mail.service';
+import { recoverPassword } from '../templates/email/recover-password';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(forwardRef(() => DataSource)) private dataSource: DataSource,
+    @Inject(forwardRef(() => LookForUser)) private lookForUser: LookForUser,
+    @Inject(MailService) private mailService: MailService,
   ) {}
 
   async login(req: AuthLoginDto, res: Response): Promise<any> {
@@ -137,5 +144,142 @@ export class AuthService {
     await user.save();
 
     return token;
+  }
+
+  async forgotPassword(email: ForgotPasswordDto) {
+    const user = await this.lookForUser.lookForUser(email);
+
+    console.log(user);
+
+    if (user) {
+      const token = uuid();
+      let email;
+      const id = user.id;
+      if (user instanceof Student) {
+        email = user.studentImport.email;
+        user.studentImport.registerToken = token;
+      } else {
+        email = user.email;
+        user.registerToken = token;
+      }
+      await this.mailService.sendMail(
+        email,
+        'Odzyskiwanie hasła',
+        recoverPassword(id, token),
+      );
+      await user.save();
+      return {
+        success: true,
+      };
+    } else {
+      throw new Error('User does not exist');
+    }
+  }
+
+  async checkUser(id: string, token: string) {
+    let user: Admin | Student | Recruiter | null;
+    const admin = await Admin.findOne({
+      where: {
+        id,
+        registerToken: token,
+      },
+    });
+    const student = await Student.findOne({
+      where: {
+        id,
+        studentImport: {
+          registerToken: token,
+        },
+      },
+    });
+    const recruiter = await Recruiter.findOne({
+      where: {
+        id,
+        registerToken: token,
+      },
+    });
+    user = admin !== null ? admin : student;
+    user = user !== null ? user : recruiter;
+
+    if (user) {
+      return {
+        success: true,
+        role: user.constructor.name.toLowerCase(),
+        id: user.id,
+        token:
+          user instanceof Student
+            ? user.studentImport.registerToken
+            : user.registerToken,
+      };
+    } else {
+      return {
+        success: false,
+      };
+    }
+  }
+
+  async changePassword(userCheck: ChangePasswordDto) {
+    let user: Admin | Student | Recruiter | null = null;
+    switch (userCheck.role) {
+      case 'admin':
+        {
+          user = await Admin.findOneOrFail({
+            where: {
+              id: userCheck.id,
+              registerToken: userCheck.token,
+            },
+          });
+          if (user) {
+            user.pwdHash = hashPwd(userCheck.pwd);
+            user.registerToken = null;
+            await user.save();
+            return {
+              success: true,
+            };
+          }
+        }
+        break;
+      case 'student':
+        {
+          user = await Student.findOneOrFail({
+            where: {
+              id: userCheck.id,
+              studentImport: {
+                registerToken: userCheck.token,
+              },
+            },
+          });
+          if (user) {
+            user.pwdHash = hashPwd(userCheck.pwd);
+            user.studentImport.registerToken = null;
+            await user.save();
+            return {
+              success: true,
+            };
+          }
+        }
+        break;
+      case 'recruiter':
+        {
+          user = await Recruiter.findOneOrFail({
+            where: {
+              id: userCheck.id,
+              registerToken: userCheck.token,
+            },
+          });
+          if (user) {
+            user.pwdHash = hashPwd(userCheck.pwd);
+            user.registerToken = null;
+            await user.save();
+            return {
+              success: true,
+            };
+          }
+        }
+        break;
+      default: {
+        throw new Error('Unauthorized change password');
+      }
+    }
   }
 }

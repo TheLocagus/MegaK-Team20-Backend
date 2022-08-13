@@ -131,15 +131,24 @@ export class StudentService {
         if (checkIfEmailAlreadyExist) {
           throw new Error('You can not use this email address');
         }
-        student.studentImport.email = updateStudentDto.email;
-        student.firstName = updateStudentDto.firstName;
-        student.lastName = updateStudentDto.lastName;
-        student.githubUsername = updateStudentDto.githubUsername;
-        student.projectUrls = updateStudentDto.projectUrls;
-        student.expectedTypeWork = updateStudentDto.expectedTypeWork;
-        student.expectedContractType = updateStudentDto.expectedContractType;
-        student.canTakeApprenticeship = updateStudentDto.canTakeApprenticeship;
-        student.monthsOfCommercialExp = updateStudentDto.monthsOfCommercialExp;
+        student.studentImport.email =
+          updateStudentDto.email ?? student.studentImport.email;
+        student.firstName = updateStudentDto.firstName ?? student.firstName;
+        student.lastName = updateStudentDto.lastName ?? student.lastName;
+        student.githubUsername =
+          updateStudentDto.githubUsername ?? student.githubUsername;
+        student.projectUrls =
+          updateStudentDto.projectUrls ?? student.projectUrls;
+        student.expectedTypeWork =
+          updateStudentDto.expectedTypeWork ?? student.expectedTypeWork;
+        student.expectedContractType =
+          updateStudentDto.expectedContractType ?? student.expectedContractType;
+        student.canTakeApprenticeship =
+          updateStudentDto.canTakeApprenticeship ??
+          student.canTakeApprenticeship;
+        student.monthsOfCommercialExp =
+          updateStudentDto.monthsOfCommercialExp ??
+          student.monthsOfCommercialExp;
         student.telephone = updateStudentDto.telephone ?? student.telephone;
         student.portfolioUrls =
           updateStudentDto.portfolioUrls ?? student.portfolioUrls;
