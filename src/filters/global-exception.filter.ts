@@ -29,6 +29,7 @@ export class GlobalExceptionFilter<T> implements ExceptionFilter {
 
     if (statusCode === 400) {
       const error = exception['response']['message'];
+      console.log({ error, statusCode });
       message = Object.values(error[0]['constraints'])[0];
     } else {
       message = getErrorMessage<T>(exception);

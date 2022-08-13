@@ -47,64 +47,6 @@ export interface GetOneStudentResponseInterface {
   courseCompletion: number;
 }
 
-export interface AvailableStudentToListResponseInterface {
-  id: string;
-  status: string;
-  firstName: string;
-  lastName: string;
-  expectedTypeWork: string;
-  targetWorkCity: string;
-  expectedContractType: string;
-  expectedSalary: number;
-  canTakeApprenticeship: boolean;
-  monthsOfCommercialExp: number;
-  courseCompletion: number;
-  courseEngagement: number;
-  projectDegree: number;
-  teamProjectDegree: number;
-}
-
-export interface StudentCvInterface {
-  firstName: string;
-  lastName: string;
-  bio: string;
-  githubUsername: string;
-  courseCompletion: number;
-  courseEngagement: number;
-  projectDegree: number;
-  teamProjectDegree: number;
-  bonusProjectUrls: string[];
-  projectUrls: string[];
-  portfolioUrls: string[] | null;
-  expectedTypeWork: string;
-  targetWorkCity: string;
-  expectedContractType: string;
-  expectedSalary: string | number;
-  canTakeApprenticeship: boolean;
-  monthsOfCommercialExp: number;
-  education: string;
-  workExperience: string;
-  courses: string;
-  email: string;
-  telephone: string;
-}
-export interface ForInterviewStudentToListResponseInterface {
-  id: string;
-  firstName: string;
-  lastName: string;
-  expectedTypeWork: string;
-  targetWorkCity: string;
-  expectedContractType: string;
-  expectedSalary: number;
-  canTakeApprenticeship: boolean;
-  monthsOfCommercialExp: number;
-  courseCompletion: number;
-  courseEngagement: number;
-  projectDegree: number;
-  teamProjectDegree: number;
-  githubUsername: string;
-  endOfReservation: Date;
-}
 
 export interface CreateStudentResponse {
   pwdHash: string;
