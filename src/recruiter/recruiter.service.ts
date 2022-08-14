@@ -281,38 +281,55 @@ export class RecruiterService {
     }
   }
 
-  async getOneStudentCv(id: string): Promise<ISingleStudentCvResponse> {
-    const oneStudent = await this.dataSource
-      .getRepository(Student)
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.studentImport', 'studentImport')
-      .where('studentImport.id = :id', { id })
-      .getOne();
+  async getOneStudentCv(
+    recruiterId: string,
+    id: string,
+  ): Promise<ISingleStudentCvResponse> {
+    try {
+      const isStudentForInterview = await RecruiterToStudent.findOne({
+        where: { recruiterId: recruiterId, studentImportId: id },
+      });
 
-    return {
-      firstName: oneStudent.firstName,
-      lastName: oneStudent.lastName,
-      bio: oneStudent.bio,
-      githubUsername: oneStudent.githubUsername,
-      courseCompletion: oneStudent.studentImport.courseCompletion,
-      courseEngagement: oneStudent.studentImport.courseEngagement,
-      projectDegree: oneStudent.studentImport.projectDegree,
-      teamProjectDegree: oneStudent.studentImport.projectDegree,
-      bonusProjectUrls: JSON.parse(oneStudent.studentImport.bonusProjectsUrls),
-      projectUrls: JSON.parse(oneStudent.projectUrls),
-      portfolioUrls: JSON.parse(oneStudent.portfolioUrls),
-      expectedTypeWork: oneStudent.expectedTypeWork,
-      expectedContractType: oneStudent.expectedContractType,
-      targetWorkCity: oneStudent.targetWorkCity,
-      expectedSalary: oneStudent.expectedSalary,
-      canTakeApprenticeship: oneStudent.canTakeApprenticeship,
-      monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
-      education: oneStudent.education,
-      workExperience: oneStudent.workExperience,
-      courses: oneStudent.courses,
-      email: oneStudent.studentImport.email,
-      telephone: oneStudent.telephone,
-    };
+      if (!isStudentForInterview) {
+        throw new Error('Brak dostępu lub błędne dane');
+      }
+
+      const oneStudent = await this.dataSource
+        .getRepository(Student)
+        .createQueryBuilder('student')
+        .leftJoinAndSelect('student.studentImport', 'studentImport')
+        .where('studentImport.id = :id', { id })
+        .getOne();
+
+      return {
+        firstName: oneStudent.firstName,
+        lastName: oneStudent.lastName,
+        bio: oneStudent.bio,
+        githubUsername: oneStudent.githubUsername,
+        courseCompletion: oneStudent.studentImport.courseCompletion,
+        courseEngagement: oneStudent.studentImport.courseEngagement,
+        projectDegree: oneStudent.studentImport.projectDegree,
+        teamProjectDegree: oneStudent.studentImport.teamProjectDegree,
+        bonusProjectUrls: JSON.parse(
+          oneStudent.studentImport.bonusProjectsUrls,
+        ),
+        projectUrls: JSON.parse(oneStudent.projectUrls),
+        portfolioUrls: JSON.parse(oneStudent.portfolioUrls),
+        expectedTypeWork: oneStudent.expectedTypeWork,
+        expectedContractType: oneStudent.expectedContractType,
+        targetWorkCity: oneStudent.targetWorkCity,
+        expectedSalary: oneStudent.expectedSalary,
+        canTakeApprenticeship: oneStudent.canTakeApprenticeship,
+        monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
+        education: oneStudent.education,
+        workExperience: oneStudent.workExperience,
+        courses: oneStudent.courses,
+        email: oneStudent.studentImport.email,
+        telephone: oneStudent.telephone,
+      };
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async getAllWithSearchedPhrase(searchedPhrase: string, numberOfPage: number) {
