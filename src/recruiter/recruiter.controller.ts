@@ -17,7 +17,7 @@ export interface StatusResponse {
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
-  @Get('/for-interview/:recruiterId')
+  @Get('/:recruiterId/for-interview')
   getForInterviewStudents(@Param('recruiterId') recruiterId: string) {
     return this.recruiterService.getForInterviewStudents(recruiterId);
   }
@@ -33,15 +33,16 @@ export class RecruiterController {
     );
   }
 
-  @Get('/cv/:id')
+  @Get('/:recruiterId/cv/:id')
   getOneStudentCv(
+    @Param('recruiterId') recruiterId: string,
     @Param('id')
     id: string,
   ): Promise<ISingleStudentCvResponse> {
-    return this.recruiterService.getOneStudentCv(id);
+    return this.recruiterService.getOneStudentCv(recruiterId, id);
   }
 
-  @Get('/:pageNumber')
+  @Get('/:recruiterId/:pageNumber/all')
   getAllStudents(
     @Param('pageNumber')
     pageNumber: string,
@@ -67,7 +68,7 @@ export class RecruiterController {
     return this.recruiterService.getDataOfLoggedRecruiter(recruiterId);
   }
 
-  @Patch('/:studentId/:recruiterId')
+  @Patch('/status/:recruiterId/:studentId')
   changeStatus(
     @Param('studentId')
     studentId: string,
