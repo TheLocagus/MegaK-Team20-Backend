@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 
 import { RecruiterService } from './recruiter.service';
 import { FiltersDto } from '../dto/recruiter.dto';
@@ -88,6 +88,19 @@ export class RecruiterController {
     return this.recruiterService.getAllWithSearchedPhrase(
       searchedPhrase,
       numberOfPage,
+    );
+  }
+
+  @Patch('/register/:recruiterId/:recruiterToken/')
+  setRecruiterPassword(
+    @Param('recruiterId') recruiterId: string,
+    @Param('recruiterToken') recruiterToken: string,
+    @Body() password: { password: string },
+  ) {
+    return this.recruiterService.setRecruiterPassword(
+      recruiterId,
+      recruiterToken,
+      password,
     );
   }
 }

@@ -123,6 +123,7 @@ export class AdminService {
       const importedRecruiter = new Recruiter();
       const token = uuid();
       //Dodać isActive do rekrutera w bazie danych
+      importedRecruiter.id = uuid();
       importedRecruiter.email = recruiter.email;
       importedRecruiter.registerToken = token;
       importedRecruiter.fullName = recruiter.fullName;
