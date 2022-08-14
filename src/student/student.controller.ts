@@ -24,7 +24,6 @@ export class StudentController {
   @UseGuards(AuthGuard('student'))
   getOneStudent(
     @UserObj() student: Student,
-    // @Param('id') id: string,
   ): Promise<GetOneStudentResponseInterface> {
     return this.studentService.getOneStudent(student.id);
   }
