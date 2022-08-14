@@ -6,21 +6,27 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { GetOneStudentResponseInterface, ICheckStudentIfExist } from '../types';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { UserObj } from '../decorators/user-obj.decorator';
+import { Student } from './student.entity';
 
 @Controller('student')
 export class StudentController {
   constructor(@Inject(StudentService) private studentService: StudentService) {}
 
-  @Get('/:id')
+  @Get('/')
+  @UseGuards(AuthGuard('student'))
   getOneStudent(
-    @Param('id') id: string,
+    @UserObj() student: Student,
+    // @Param('id') id: string,
   ): Promise<GetOneStudentResponseInterface> {
-    return this.studentService.getOneStudent(id);
+    return this.studentService.getOneStudent(student.id);
   }
 
   @Get('/register/:id/:registerToken')
@@ -36,11 +42,12 @@ export class StudentController {
     return this.studentService.createStudent(createStudentDto);
   }
 
-  @Patch('/:id')
+  @Patch('/')
+  @UseGuards(AuthGuard('student'))
   patchStudent(
-    @Param('id') id: string,
+    @UserObj() student: Student,
     @Body() updateStudentDto: UpdateStudentDto,
   ) {
-    return this.studentService.patchStudent(id, updateStudentDto);
+    return this.studentService.patchStudent(student.id, updateStudentDto);
   }
 }

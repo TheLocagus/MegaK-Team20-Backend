@@ -1,8 +1,8 @@
 import { Strategy } from 'passport-jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Student } from '../../student/student.entity';
 import { salt } from '../../config/config-salt';
+import { StudentImport } from '../../studentImport/studentImport.entity';
 
 export interface JwtPayload {
   id: string;
@@ -25,12 +25,12 @@ export class StudentStrategy extends PassportStrategy(Strategy, 'student') {
     if (!payload || !payload.id) {
       return done(new UnauthorizedException(), false);
     }
-    const student = await Student.findOne({
+    const studentImport = await StudentImport.findOne({
       where: { currentTokenId: payload.id },
     });
-    if (!student) {
+    if (!studentImport) {
       return done(new UnauthorizedException(), false);
     }
-    done(null, student);
+    done(null, studentImport);
   }
 }

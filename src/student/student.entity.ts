@@ -31,12 +31,6 @@ export class Student extends BaseEntity implements StudentInterface {
   pwdHash: string;
 
   @Column({
-    nullable: true,
-    default: null,
-  })
-  currentTokenId: string | null;
-
-  @Column({
     default: '',
   })
   telephone: string;

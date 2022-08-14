@@ -29,6 +29,12 @@ export class StudentImport
   registerToken: string;
 
   @Column({
+    nullable: true,
+    default: null,
+  })
+  currentTokenId: string | null;
+
+  @Column({
     nullable: false,
     unique: true,
   })

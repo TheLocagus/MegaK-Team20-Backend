@@ -16,6 +16,7 @@ import { LookForUser } from './look-for-user.service';
 import { MailService } from '../mail/mail.service';
 import { recoverPassword } from '../templates/email/recover-password';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { StudentImport } from '../studentImport/studentImport.entity';
 
 @Injectable()
 export class AuthService {
@@ -57,7 +58,7 @@ export class AuthService {
             .andWhere('student.pwdHash = :pwdHash', {
               pwdHash: hashPwd(req.pwd),
             })
-            .andWhere('student.isActive = :isActive', {
+            .andWhere('studentImport.isActive = :isActive', {
               isActive: true,
             })
             .getOne();
@@ -81,8 +82,8 @@ export class AuthService {
         })
         .json({
           ok: true,
-          role: user.constructor.name,
-          id: user.id,
+          role: user.constructor.name.toLowerCase(),
+          id: user instanceof Student ? user.studentImport.id : user.id,
         });
     } catch (e) {
       return res.json({ error: e.message });
@@ -91,14 +92,16 @@ export class AuthService {
 
   async logout(user: Admin | Student | Recruiter, res: Response) {
     try {
-      user.currentTokenId = null;
+      user instanceof Student
+        ? (user.studentImport.currentTokenId = null)
+        : (user.currentTokenId = null);
       await user.save();
       res.clearCookie('jwt', {
         secure: configCookie.secure,
         domain: configCookie.domain,
         httpOnly: true,
       });
-      return res.json({ ok: true });
+      return res.json({ success: true });
     } catch (e) {
       return res.json({ error: e.message });
     }
@@ -131,7 +134,11 @@ export class AuthService {
       }
       if (user instanceof Student) {
         userWithThisToken = await Student.findOne({
-          where: { currentTokenId: token },
+          where: {
+            studentImport: {
+              currentTokenId: token,
+            },
+          },
         });
       }
       if (user instanceof Recruiter) {
@@ -140,7 +147,12 @@ export class AuthService {
         });
       }
     } while (!!userWithThisToken);
-    user.currentTokenId = token;
+    if (user instanceof Student) {
+      user.studentImport.currentTokenId = token;
+      await user.studentImport.save();
+    } else {
+      user.currentTokenId = token;
+    }
     await user.save();
 
     return token;
@@ -184,14 +196,20 @@ export class AuthService {
         registerToken: token,
       },
     });
-    const student = await Student.findOne({
+    const studentImport = await StudentImport.findOne({
       where: {
         id,
+      },
+    });
+    const student = await Student.findOne({
+      where: {
         studentImport: {
+          id,
           registerToken: token,
         },
       },
     });
+    student.studentImport = studentImport;
     const recruiter = await Recruiter.findOne({
       where: {
         id,
@@ -201,11 +219,13 @@ export class AuthService {
     user = admin !== null ? admin : student;
     user = user !== null ? user : recruiter;
 
+    console.log({ user });
+
     if (user) {
       return {
         success: true,
         role: user.constructor.name.toLowerCase(),
-        id: user.id,
+        id: user instanceof Student ? user.studentImport.id : user.id,
         token:
           user instanceof Student
             ? user.studentImport.registerToken
@@ -241,18 +261,25 @@ export class AuthService {
         break;
       case 'student':
         {
-          user = await Student.findOneOrFail({
+          const studentImport = await StudentImport.findOne({
             where: {
               id: userCheck.id,
+            },
+          });
+          user = await Student.findOne({
+            where: {
               studentImport: {
+                id: userCheck.id,
                 registerToken: userCheck.token,
               },
             },
           });
           if (user) {
             user.pwdHash = hashPwd(userCheck.pwd);
-            user.studentImport.registerToken = null;
+            user.studentImport = studentImport;
+            studentImport.registerToken = null;
             await user.save();
+            await studentImport.save();
             return {
               success: true,
             };

@@ -110,19 +110,21 @@ export class StudentService {
   }
 
   async patchStudent(id: string, updateStudentDto: UpdateStudentDto) {
-    const student = await Student.findOneOrFail({
+    const student = await Student.findOne({
       where: {
-        id,
+        studentImport: {
+          id,
+        },
       },
     });
     if (student) {
-      const studentImport = await StudentImport.findOneOrFail({
+      const studentImport = await StudentImport.findOne({
         where: {
-          id: student.studentImport.id,
+          id,
         },
       });
       if (studentImport) {
-        const checkIfEmailAlreadyExist = await StudentImport.findOneOrFail({
+        const checkIfEmailAlreadyExist = await StudentImport.findOne({
           where: {
             id: Not(studentImport.id),
             email: updateStudentDto.email,
@@ -131,6 +133,7 @@ export class StudentService {
         if (checkIfEmailAlreadyExist) {
           throw new Error('You can not use this email address');
         }
+        student.studentImport = studentImport;
         student.studentImport.email =
           updateStudentDto.email ?? student.studentImport.email;
         student.firstName = updateStudentDto.firstName ?? student.firstName;
@@ -161,6 +164,8 @@ export class StudentService {
         student.workExperience =
           updateStudentDto.workExperience ?? student.workExperience;
         student.courses = updateStudentDto.courses ?? student.courses;
+        await student.save();
+        await studentImport.save();
         return {
           success: true,
         };

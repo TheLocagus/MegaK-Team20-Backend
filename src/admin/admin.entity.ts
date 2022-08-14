@@ -6,6 +6,9 @@ export class Admin extends BaseEntity implements AdminInterface {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
+  isActive: boolean;
+
   @Column({
     length: 128,
   })
