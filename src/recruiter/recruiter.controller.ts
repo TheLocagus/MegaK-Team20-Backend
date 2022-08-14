@@ -17,6 +17,18 @@ export interface StatusResponse {
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
+  @Get('/all/:recruiterId/:pageNumber')
+  getAllStudents(
+    @Param('recruiterId') recruiterId: string,
+    @Param('pageNumber')
+    pageNumber: string,
+  ): Promise<IAvailableStudentToListResponse> {
+    return this.recruiterService.getAllStudents(
+      recruiterId,
+      Number(pageNumber),
+    );
+  }
+
   @Get('/:recruiterId/for-interview')
   getForInterviewStudents(@Param('recruiterId') recruiterId: string) {
     return this.recruiterService.getForInterviewStudents(recruiterId);
@@ -40,14 +52,6 @@ export class RecruiterController {
     id: string,
   ): Promise<ISingleStudentCvResponse> {
     return this.recruiterService.getOneStudentCv(recruiterId, id);
-  }
-
-  @Get('/:recruiterId/:pageNumber/all')
-  getAllStudents(
-    @Param('pageNumber')
-    pageNumber: string,
-  ): Promise<IAvailableStudentToListResponse> {
-    return this.recruiterService.getAllStudents(Number(pageNumber));
   }
 
   @Get('/register/:id/:registerToken')
@@ -84,14 +88,16 @@ export class RecruiterController {
     );
   }
 
-  @Get('/:numberOfPage/:searchedPhrase')
+  @Get('/:recruiterId/:numberOfPage/:searchedPhrase')
   getAllWithSearchedPhrase(
+    @Param('recruiterId') recruiterId: string,
     @Param('searchedPhrase')
     searchedPhrase: string,
     @Param('numberOfPage')
     numberOfPage: number,
   ) {
     return this.recruiterService.getAllWithSearchedPhrase(
+      recruiterId,
       searchedPhrase,
       numberOfPage,
     );
