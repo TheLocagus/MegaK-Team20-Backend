@@ -93,14 +93,27 @@ export class StudentService {
       student.firstName = createStudentDto.firstName;
       student.lastName = createStudentDto.lastName;
       student.githubUsername = createStudentDto.githubUsername;
-      student.projectUrls = createStudentDto.projectUrls;
+      student.projectUrls = JSON.stringify(createStudentDto.projectUrls);
       student.expectedTypeWork = createStudentDto.expectedTypeWork;
       student.expectedContractType = createStudentDto.expectedContractType;
       student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
       student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
       student.studentImport.isActive = true;
       student.studentImport.registerToken = null;
+      student.bio = createStudentDto.bio;
+      student.targetWorkCity = createStudentDto.targetWorkCity;
+      student.portfolioUrls = JSON.stringify(createStudentDto.portfolioUrls);
+      student.expectedSalary = createStudentDto.expectedSalary;
+      student.education = createStudentDto.education;
+      student.workExperience = createStudentDto.workExperience;
+      student.courses = createStudentDto.courses;
+      student.telephone = createStudentDto.telephone;
       await student.save();
+
+      oneStudent.isActive = true;
+      oneStudent.registerToken = null;
+      await oneStudent.save();
+
       return {
         success: true,
       };

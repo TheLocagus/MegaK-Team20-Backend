@@ -24,7 +24,7 @@ import {
 import { RecruiterToStudent } from './recruiterToStudent.entity';
 import { hashPwd } from '../utils/hash-pwd';
 
-const MAX_PER_PAGE = 2;
+const MAX_PER_PAGE = 5;
 
 @Injectable()
 export class RecruiterService {
@@ -145,8 +145,10 @@ export class RecruiterService {
 
         let recruiterToStudent = await RecruiterToStudent.findOne({
           where: {
+            // recruiterId,
+            // studentImportId: foundStudent.id,
             recruiterId,
-            studentImportId: foundStudent.id,
+            studentImportId: foundStudentImport.id,
           },
         });
         if (!recruiterToStudent) {
@@ -182,6 +184,9 @@ export class RecruiterService {
       case `${RecruiterActionsOfStatusEnum.employed}`: {
         foundStudent.status = UserStatus.employed;
         foundStudentImport.isActive = false;
+        await foundStudent.save();
+        await foundStudentImport.save();
+        console.log(foundStudent);
         const recruiterToStudentToDelete = await RecruiterToStudent.findOne({
           where: {
             recruiterId,
@@ -286,13 +291,13 @@ export class RecruiterService {
     id: string,
   ): Promise<ISingleStudentCvResponse> {
     try {
-      const isStudentForInterview = await RecruiterToStudent.findOne({
-        where: { recruiterId: recruiterId, studentImportId: id },
-      });
-
-      if (!isStudentForInterview) {
-        throw new Error('Brak dostępu lub błędne dane');
-      }
+      // const isStudentForInterview = await RecruiterToStudent.findOne({
+      //   where: { recruiterId: recruiterId, studentImportId: id },
+      // });
+      //
+      // if (!isStudentForInterview) {
+      //   throw new Error('Brak dostępu lub błędne dane');
+      // }
 
       const oneStudent = await this.dataSource
         .getRepository(Student)

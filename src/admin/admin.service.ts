@@ -22,7 +22,7 @@ export class AdminService {
   ) {}
 
   async importStudents(files: MulterDiskUploadedFiles) {
-    const fileProperty = files?.testData?.[0] ?? null;
+    const fileProperty = files?.file?.[0] ?? null;
     const students: StudentToImport[] = [];
     let modifiedImportedStudents = 0;
     let newImportedStudents = 0;
