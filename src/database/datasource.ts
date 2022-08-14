@@ -1,5 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { config } from '../config/config.example';
+import { config } from '../config/config-db';
 
 export const connectionSource = new DataSource({
   type: 'mysql',
@@ -9,9 +9,9 @@ export const connectionSource = new DataSource({
   password: config.password,
   database: config.database,
   entities: [
-    'dist/**/**/**/**.entity{.ts,.js}',
-    'dist/**/**/**.entity{.ts,.js}',
-    'dist/**/**.entity{.ts,.js}',
+    'dist/**/**/**/*.entity{.ts,.js}',
+    'dist/**/**/*.entity{.ts,.js}',
+    'dist/**/*.entity{.ts,.js}',
   ],
   bigNumberStrings: false,
   logging: config.logging,
