@@ -28,7 +28,7 @@ export interface StatusResponse {
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
-  @Get('/all/:pageNumber')
+  @Get('/all/:pageNumber?')
   @UseGuards(AuthGuard('recruiter'))
   getAllStudents(
     @UserObj() recruiter: Recruiter,
