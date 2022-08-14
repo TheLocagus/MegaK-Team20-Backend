@@ -2,11 +2,13 @@ import {
   BaseEntity,
   Column,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Student } from '../student/student.entity';
 import { StudentImportInterface } from '../types/student-import';
+import { RecruiterToStudent } from '../recruiter/recruiterToStudent.entity';
 
 @Entity()
 export class StudentImport
@@ -67,4 +69,10 @@ export class StudentImport
 
   @OneToOne(() => Student)
   student: Student;
+
+  @OneToMany(
+    () => RecruiterToStudent,
+    (recruiterToStudent) => recruiterToStudent.studentImport,
+  )
+  public recruiterToStudents: RecruiterToStudent[];
 }
