@@ -633,4 +633,26 @@ export class RecruiterService {
 
     return { success: true };
   }
+
+  async getDataOfLoggedRecruiter(recruiterId: string) {
+    const recruiter = await Recruiter.findOneOrFail({
+      where: {
+        id: recruiterId,
+        isActive: true,
+      },
+    });
+
+    const { id, fullName } = recruiter;
+
+    const recruitersStudents = await RecruiterToStudent.findBy({
+      recruiterId: id,
+    });
+
+    const studentsReserved = recruitersStudents.map((item) => ({
+      studentId: item.studentImportId,
+      endOfReservation: item.endOfReservation,
+    }));
+
+    return { id, fullName, studentsReserved };
+  }
 }
