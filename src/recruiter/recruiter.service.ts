@@ -1,26 +1,35 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { DataSource, In } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
-import { ContractType, ISingleStudentCvResponse, TypeWork } from '../types';
+import {
+  ContractType,
+  ICheckRecruiterIfExist,
+  ISingleStudentCvResponse,
+  TypeWork,
+} from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
 import { count, firstValueFrom, map, tap } from 'rxjs';
 import { v4 as uuid } from 'uuid';
+
 import {
   AvailableStudentToListResponseInterface,
   ForInterviewStudentToListResponseInterface,
   IAvailableStudentToListResponse,
+  IForInterviewStudentToListResponse,
   RecruiterActionsOfStatusEnum,
 } from '../types';
 import { RecruiterToStudent } from './recruiterToStudent.entity';
+import { hashPwd } from '../utils/hash-pwd';
 
 const MAX_PER_PAGE = 2;
 
 @Injectable()
 export class RecruiterService {
   constructor(
+    private readonly httpService: HttpService,
     @Inject(forwardRef(() => DataSource)) private dataSource: DataSource,
   ) {}
 
@@ -261,7 +270,6 @@ export class RecruiterService {
             canTakeApprenticeship: student.canTakeApprenticeship,
             endOfReservation: student.endOfReservation,
           };
-          console.log({ studentInfo });
           dataToResponse.push(studentInfo);
         }
         return dataToResponse;
@@ -598,11 +606,31 @@ export class RecruiterService {
       })
       .getMany();
 
-      const count = data.length
+    const count = data.length;
     // const totalPages = Math.ceil(count / maxPerPage);
     // return { count, items, totalPages };
     console.log(availableStudents);
     const totalPages = Math.ceil(count / maxPerPage);
     return { count, availableStudents, totalPages };
+  }
+
+  async setRecruiterPassword(
+    recruiterId: string,
+    recruiterToken: string,
+    password: { password: string },
+  ) {
+    const recruiter = await Recruiter.findOneOrFail({
+      where: {
+        id: recruiterId,
+        registerToken: recruiterToken,
+      },
+    });
+
+    recruiter.pwdHash = hashPwd(password.password);
+    recruiter.registerToken = null;
+    recruiter.isActive = true;
+    await recruiter.save();
+
+    return { success: true };
   }
 }
