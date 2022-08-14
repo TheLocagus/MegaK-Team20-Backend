@@ -62,6 +62,11 @@ export class RecruiterController {
     );
   }
 
+  @Get('/:recruiterId/data')
+  getDataOfLoggedRecruiter(@Param('recruiterId') recruiterId: string) {
+    return this.recruiterService.getDataOfLoggedRecruiter(recruiterId);
+  }
+
   @Patch('/:studentId/:recruiterId')
   changeStatus(
     @Param('studentId')
