@@ -30,7 +30,7 @@
   - choose expectations about your employment.
 
 ## 📷Screenshots
-![Example screenshot](https://cdn.discordapp.com/attachments/999228024073494578/1007658624908284054/unknown.png)
+![Example screenshot](https://cdn.discordapp.com/attachments/346945171780403200/1008360517540257872/WiP.png)
 
 ## 🏁Getting started
 ### Prerequisite
