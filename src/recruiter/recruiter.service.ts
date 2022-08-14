@@ -1,10 +1,12 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
 import { ContractType, ISingleStudentCvResponse, TypeWork } from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
+import { HttpService } from '@nestjs/axios';
+import { count, firstValueFrom, map, tap } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import {
   AvailableStudentToListResponseInterface,
@@ -14,7 +16,7 @@ import {
 } from '../types';
 import { RecruiterToStudent } from './recruiterToStudent.entity';
 
-const MAX_PER_PAGE = 1;
+const MAX_PER_PAGE = 2;
 
 @Injectable()
 export class RecruiterService {
@@ -278,7 +280,7 @@ export class RecruiterService {
       .leftJoinAndSelect('student.studentImport', 'studentImport')
       .where('studentImport.id = :id', { id })
       .getOne();
-    console.log('TRUBDINDPUNDPNDSJNOJSOJDO()I@(I@@');
+
     return {
       firstName: oneStudent.firstName,
       lastName: oneStudent.lastName,
@@ -365,7 +367,9 @@ export class RecruiterService {
     return { count, availableStudents, totalPages };
   }
 
-  async filterListWithAllStudents(filters: FiltersDto) {
+  async filterListWithAllStudents(filters: FiltersDto, numberOfPage: number) {
+    const maxPerPage = MAX_PER_PAGE;
+
     const {
       contractType,
       codeRate,
@@ -393,6 +397,75 @@ export class RecruiterService {
       TypeWork.remotely,
       TypeWork.noPreference,
     ];
+    // const [availableStudents, count] = await Student.findAndCount({
+    //   relations: {
+    //     studentImport: true,
+    //   },
+    //   select: {
+    //     id: true,
+    //     status: true,
+    //     firstName: true,
+    //     lastName: true,
+    //     expectedTypeWork: true,
+    //     targetWorkCity: true,
+    //     expectedContractType: true,
+    //     expectedSalary: true,
+    //     canTakeApprenticeship: true,
+    //     monthsOfCommercialExp: true,
+    //     studentImport: {
+    //       courseCompletion: true,
+    //       courseEngagement: true,
+    //       projectDegree: true,
+    //       teamProjectDegree: true,
+    //       id: true,
+    //     },
+    //   },
+    //   where: {
+    //     status: UserStatus.active,
+    //     expectedContractType: In(
+    //       contractType.length !== 0
+    //         ? contractType.length === 4
+    //           ? ifNoFilteredOrSignedAllContractType
+    //           : [...contractType, TypeWork.noPreference]
+    //         : ifNoFilteredOrSignedAllContractType,
+    //     ),
+    //     canTakeApprenticeship: In(
+    //       internship !== null ? [internship] : [true, false],
+    //     ),
+    //     expectedTypeWork: In(
+    //       workPlace.length !== 0
+    //         ? workPlace.length === 2
+    //           ? noFilteredOrAllSignedTypeWork
+    //           : workPlace[0] === 'stationary'
+    //           ? [
+    //               TypeWork.stationary,
+    //               TypeWork.readyToMove,
+    //               TypeWork.hybrid,
+    //               TypeWork.noPreference,
+    //             ]
+    //           : [TypeWork.hybrid, TypeWork.remotely, TypeWork.noPreference]
+    //         : noFilteredOrAllSignedTypeWork,
+    //     ),
+    //     monthsOfCommercialExp: experience !== null ? experience : 0,
+    //
+    //     studentImport: {
+    //       isActive: true,
+    //       projectDegree: In(
+    //         codeRate.length !== 0 ? codeRate : ifNoFilteredRatios,
+    //       ),
+    //       courseCompletion: In(
+    //         courseRate.length !== 0 ? courseRate : ifNoFilteredRatios,
+    //       ),
+    //       teamProjectDegree: In(
+    //         teamWorkRate.length !== 0 ? teamWorkRate : ifNoFilteredRatios,
+    //       ),
+    //     },
+    //   },
+    //
+    //   skip: maxPerPage * (numberOfPage - 1),
+    //   take: maxPerPage,
+    // });
+
     const items = await this.dataSource
       .getRepository(Student)
       .createQueryBuilder('student')
@@ -447,13 +520,89 @@ export class RecruiterService {
         activityRate:
           activityRate.length !== 0 ? activityRate : ifNoFilteredRatios,
       })
-      // .take(maxPerPage)
-      // .skip(maxPerPage * (currentPage - 1))
+      .take(maxPerPage)
+      .skip(maxPerPage * (numberOfPage - 1))
       .getMany();
 
-    // const count = items.length;
+    const availableStudents: AvailableStudentToListResponseInterface[] =
+      items.map((student) => {
+        return {
+          id: student.studentImport.id,
+          firstName: student.firstName,
+          lastName: student.lastName,
+          expectedTypeWork: student.expectedTypeWork,
+          targetWorkCity: student.targetWorkCity,
+          expectedContractType: student.expectedContractType,
+          expectedSalary: student.expectedSalary,
+          canTakeApprenticeship: student.canTakeApprenticeship,
+          monthsOfCommercialExp: student.monthsOfCommercialExp,
+          courseCompletion: student.studentImport.courseCompletion,
+          courseEngagement: student.studentImport.courseEngagement,
+          projectDegree: student.studentImport.projectDegree,
+          teamProjectDegree: student.studentImport.teamProjectDegree,
+        };
+      });
+    const data = await this.dataSource
+      .getRepository(Student)
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.studentImport', 'studentImport')
+      .where('studentImport.isActive = :isActive', { isActive: true })
+      .andWhere('student.expectedContractType IN (:...contractType)', {
+        contractType:
+          contractType.length !== 0
+            ? contractType.length === 4
+              ? ifNoFilteredOrSignedAllContractType
+              : [...contractType, TypeWork.noPreference]
+            : ifNoFilteredOrSignedAllContractType,
+      })
+      .andWhere('studentImport.projectDegree IN (:...codeRate)', {
+        codeRate: codeRate.length !== 0 ? codeRate : ifNoFilteredRatios,
+      })
+      .andWhere('studentImport.courseCompletion IN (:...courseRate)', {
+        courseRate: courseRate.length !== 0 ? courseRate : ifNoFilteredRatios,
+      })
+      .andWhere('student.canTakeApprenticeship IN (:...internship)', {
+        internship: internship !== null ? [internship] : [true, false],
+      })
+      .andWhere('studentImport.teamProjectDegree IN (:...teamWorkRate)', {
+        teamWorkRate:
+          teamWorkRate.length !== 0 ? teamWorkRate : ifNoFilteredRatios,
+      })
+      .andWhere('student.expectedTypeWork IN (:...workPlace)', {
+        workPlace:
+          workPlace.length !== 0
+            ? workPlace.length === 2
+              ? noFilteredOrAllSignedTypeWork
+              : workPlace[0] === 'stationary'
+              ? [
+                  TypeWork.stationary,
+                  TypeWork.readyToMove,
+                  TypeWork.hybrid,
+                  TypeWork.noPreference,
+                ]
+              : [TypeWork.hybrid, TypeWork.remotely, TypeWork.noPreference]
+            : noFilteredOrAllSignedTypeWork,
+      })
+      .andWhere('student.monthsOfCommercialExp >= :experience', {
+        experience: experience !== null ? experience : 0,
+      })
+      .andWhere('student.expectedSalary >= :salaryLow', {
+        salaryLow: salary[0] ? salary[0] : 0,
+      })
+      .andWhere('student.expectedSalary <= :salaryHigh', {
+        salaryHigh: salary[1] ? salary[1] : 99999999,
+      })
+      .andWhere('studentImport.courseEngagement IN (:...activityRate)', {
+        activityRate:
+          activityRate.length !== 0 ? activityRate : ifNoFilteredRatios,
+      })
+      .getMany();
+
+      const count = data.length
     // const totalPages = Math.ceil(count / maxPerPage);
     // return { count, items, totalPages };
-    return items;
+    console.log(availableStudents);
+    const totalPages = Math.ceil(count / maxPerPage);
+    return { count, availableStudents, totalPages };
   }
 }

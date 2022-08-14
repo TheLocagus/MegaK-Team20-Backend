@@ -22,9 +22,15 @@ export class RecruiterController {
     return this.recruiterService.getForInterviewStudents(recruiterId);
   }
 
-  @Get('/:numberOfPage/filter')
-  filterListWithAllStudents(@Body() filters: FiltersDto) {
-    return this.recruiterService.filterListWithAllStudents(filters);
+  @Post('/:numberOfPage/filter')
+  filterListWithAllStudents(
+    @Body() filters: FiltersDto,
+    @Param('numberOfPage') numberOfPage: number,
+  ) {
+    return this.recruiterService.filterListWithAllStudents(
+      filters,
+      numberOfPage,
+    );
   }
 
   @Get('/cv/:id')
