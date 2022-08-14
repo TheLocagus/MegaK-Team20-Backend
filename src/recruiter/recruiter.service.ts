@@ -1,24 +1,17 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, In, Not } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
-import {
-  ContractType,
-  ICheckRecruiterIfExist,
-  ISingleStudentCvResponse,
-  TypeWork,
-} from '../types';
+import { ContractType, ISingleStudentCvResponse, TypeWork } from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
-import { count, firstValueFrom, map, tap } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 
 import {
   AvailableStudentToListResponseInterface,
   ForInterviewStudentToListResponseInterface,
   IAvailableStudentToListResponse,
-  IForInterviewStudentToListResponse,
   RecruiterActionsOfStatusEnum,
 } from '../types';
 import { RecruiterToStudent } from './recruiterToStudent.entity';
@@ -34,9 +27,22 @@ export class RecruiterService {
   ) {}
 
   async getAllStudents(
+    recruiterId: string,
     currentPage = 1,
   ): Promise<IAvailableStudentToListResponse> {
     const maxPerPage = MAX_PER_PAGE;
+
+    const recruiterToStudent = await RecruiterToStudent.find({
+      where: {
+        recruiterId,
+      },
+    });
+
+    const studentsInTalkForRecruiter: string[] = recruiterToStudent.map(
+      (studentId) => {
+        return studentId.studentImportId;
+      },
+    );
 
     const [items, count] = await Student.findAndCount({
       relations: {
@@ -64,6 +70,7 @@ export class RecruiterService {
       where: {
         status: UserStatus.active,
         studentImport: {
+          id: Not(In(studentsInTalkForRecruiter)),
           isActive: true,
         },
       },
@@ -204,13 +211,6 @@ export class RecruiterService {
   }
 
   async getForInterviewStudents(recruiterId: string) {
-    // const students = await this.dataSource
-    //   .getRepository(Student)
-    //   .createQueryBuilder('student')
-    //   .leftJoinAndSelect('student.studentImport', 'studentImport')
-    //   .where('student.status = :status', { status: UserStatus.duringTalk })
-    //   .getMany();
-
     const recruiter = await Recruiter.findOne({
       where: {
         id: recruiterId,
@@ -223,7 +223,6 @@ export class RecruiterService {
           recruiterId: recruiter.id,
         },
       });
-      console.log('zczytał recruiter');
       if (studentsImportIds) {
         const students = await Promise.all(
           studentsImportIds.map(async (studentId) => {
@@ -249,7 +248,6 @@ export class RecruiterService {
             }
           }),
         );
-        console.log('zczytał studentsids');
         const dataToResponse: ForInterviewStudentToListResponseInterface[] = [];
 
         for (const student of students) {
@@ -332,8 +330,24 @@ export class RecruiterService {
     }
   }
 
-  async getAllWithSearchedPhrase(searchedPhrase: string, numberOfPage: number) {
+  async getAllWithSearchedPhrase(
+    recruiterId: string,
+    searchedPhrase: string,
+    numberOfPage: number,
+  ) {
     const maxPerPage = MAX_PER_PAGE;
+
+    const recruiterToStudent = await RecruiterToStudent.find({
+      where: {
+        recruiterId,
+      },
+    });
+
+    const studentsInTalkForRecruiter: string[] = recruiterToStudent.map(
+      (studentId) => {
+        return studentId.studentImportId;
+      },
+    );
 
     const [items, count] = await Student.findAndCount({
       relations: {
@@ -362,6 +376,7 @@ export class RecruiterService {
         status: UserStatus.active,
         targetWorkCity: searchedPhrase,
         studentImport: {
+          id: Not(In(studentsInTalkForRecruiter)),
           isActive: true,
         },
       },
