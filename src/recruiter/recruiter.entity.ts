@@ -5,13 +5,12 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Student } from '../student/student.entity';
-import { RecruiterInterface } from '../types/recruiter';
+import { RecruiterInterface } from '../types';
+import { RecruiterToStudent } from './recruiterToStudent.entity';
 
 @Entity()
 export class Recruiter extends BaseEntity implements RecruiterInterface {
   @PrimaryGeneratedColumn('uuid')
-  @OneToMany(() => Student, (student) => student.recruiterId)
   id: string;
 
   @Column({
@@ -60,4 +59,10 @@ export class Recruiter extends BaseEntity implements RecruiterInterface {
     default: null,
   })
   registerToken: string | null;
+
+  @OneToMany(
+    () => RecruiterToStudent,
+    (recruiterToStudent) => recruiterToStudent.recruiter,
+  )
+  public recruiterToStudents: RecruiterToStudent[];
 }

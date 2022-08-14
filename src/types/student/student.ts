@@ -3,7 +3,6 @@ export interface StudentInterface {
   status: string;
   pwdHash: string;
   currentTokenId: string | null;
-  recruiterId: object;
   telephone: string;
   firstName: string;
   lastName: string;
@@ -21,7 +20,6 @@ export interface StudentInterface {
   workExperience: string;
   courses: string;
   studentImport: object;
-  endOfReservation: Date | null;
 }
 
 export interface GetOneStudentResponseInterface {

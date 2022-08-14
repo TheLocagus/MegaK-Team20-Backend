@@ -1,19 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Redirect,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 
 import { RecruiterService } from './recruiter.service';
 import { FiltersDto } from '../dto/recruiter.dto';
 import {
   IAvailableStudentToListResponse,
   ICheckRecruiterIfExist,
-  IForInterviewStudentToListResponse,
   ISingleStudentCvResponse,
   RecruiterActionsOfStatusEnum,
 } from '../types';
@@ -26,9 +17,9 @@ export interface StatusResponse {
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
-  @Get('/for-interview')
-  getForInterviewStudents() {
-    return this.recruiterService.getForInterviewStudents();
+  @Get('/for-interview/:recruiterId')
+  getForInterviewStudents(@Param('recruiterId') recruiterId: string) {
+    return this.recruiterService.getForInterviewStudents(recruiterId);
   }
 
   @Post('/:numberOfPage/filter')
@@ -71,14 +62,20 @@ export class RecruiterController {
     );
   }
 
-  @Patch('/:id')
+  @Patch('/:studentId/:recruiterId')
   changeStatus(
-    @Param('id')
-    id: string,
+    @Param('studentId')
+    studentId: string,
+    @Param('recruiterId')
+    recruiterId: string,
     @Body()
     status: StatusResponse,
   ) {
-    return this.recruiterService.changeStatus(id, status.status);
+    return this.recruiterService.changeStatus(
+      studentId,
+      recruiterId,
+      status.status,
+    );
   }
 
   @Get('/:numberOfPage/:searchedPhrase')

@@ -3,17 +3,14 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Recruiter } from '../recruiter/recruiter.entity';
 import { ContractType, StudentInterface, TypeWork } from '../types';
 import { StudentImport } from '../studentImport/studentImport.entity';
 
 export enum UserStatus {
   active = 'active',
-  duringTalk = 'duringTalk',
   employed = 'employed',
 }
 
@@ -38,10 +35,6 @@ export class Student extends BaseEntity implements StudentInterface {
     default: null,
   })
   currentTokenId: string | null;
-
-  @ManyToOne(() => Recruiter, (recruiter) => recruiter.id)
-  @JoinColumn({ name: 'recruiterId' })
-  recruiterId: Recruiter;
 
   @Column({
     default: '',
@@ -129,10 +122,4 @@ export class Student extends BaseEntity implements StudentInterface {
   @OneToOne(() => StudentImport)
   @JoinColumn()
   studentImport: StudentImport;
-
-  @Column({
-    type: 'date',
-    default: null,
-  })
-  endOfReservation: Date | null;
 }
