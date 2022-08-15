@@ -28,11 +28,12 @@ export class AuthController {
   }
 
   @Get('/logout')
-  @UseGuards(AuthGuard(['admin', 'recruiter', 'student']))
+  @UseGuards(AuthGuard('logout'))
   async logout(
     @UserObj() user: Admin | Student | Recruiter,
     @Res() res: Response,
   ) {
+    console.log('logout controller');
     return this.authService.logout(user, res);
   }
   @Get('/check-user/:id/:token')
