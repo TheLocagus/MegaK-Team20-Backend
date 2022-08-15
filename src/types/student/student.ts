@@ -42,6 +42,7 @@ export interface GetOneStudentResponseInterface {
   projectDegree: number;
   courseEngagement: number;
   courseCompletion: number;
+  bonusProjectUrls: string;
 }
 
 export interface CreateStudentResponse {

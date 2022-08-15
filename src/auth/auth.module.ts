@@ -6,6 +6,7 @@ import { RecruiterStrategy } from './strategy/recruiter.strategy';
 import { StudentStrategy } from './strategy/student.strategy';
 import { LookForUser } from './look-for-user.service';
 import { MailModule } from '../mail/mail.module';
+import { LogoutStrategy } from './strategy/logout.strategy';
 
 @Module({
   imports: [forwardRef(() => MailModule)],
@@ -16,7 +17,8 @@ import { MailModule } from '../mail/mail.module';
     RecruiterStrategy,
     StudentStrategy,
     LookForUser,
+    LogoutStrategy,
   ],
-  exports: [AdminStrategy, RecruiterStrategy, StudentStrategy],
+  exports: [AdminStrategy, RecruiterStrategy, StudentStrategy, LogoutStrategy],
 })
 export class AuthModule {}

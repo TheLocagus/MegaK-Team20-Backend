@@ -91,6 +91,8 @@ export class AuthService {
   }
 
   async logout(user: Admin | Student | Recruiter, res: Response) {
+    console.log('logout');
+    console.log({ user });
     try {
       user instanceof Student
         ? (user.studentImport.currentTokenId = null)

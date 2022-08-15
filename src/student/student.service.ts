@@ -37,8 +37,8 @@ export class StudentService {
         githubUsername: oneStudent.githubUsername,
         lastName: oneStudent.lastName,
         monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
-        portfolioUrls: oneStudent.portfolioUrls,
-        projectUrls: oneStudent.projectUrls,
+        portfolioUrls: JSON.parse(oneStudent.portfolioUrls),
+        projectUrls: JSON.parse(oneStudent.projectUrls),
         targetWorkCity: oneStudent.targetWorkCity,
         telephone: oneStudent.telephone,
         workExperience: oneStudent.workExperience,
@@ -46,6 +46,9 @@ export class StudentService {
         projectDegree: oneStudent.studentImport.projectDegree,
         courseEngagement: oneStudent.studentImport.courseEngagement,
         courseCompletion: oneStudent.studentImport.courseCompletion,
+        bonusProjectUrls: JSON.parse(
+          oneStudent.studentImport.bonusProjectsUrls,
+        ),
       };
     } else {
       throw new Error('Student does not exist');
