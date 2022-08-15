@@ -1,13 +1,13 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { DataSource, In } from 'typeorm';
+import { DataSource, In, Not } from 'typeorm';
 import { Student, UserStatus } from '../student/student.entity';
 import { ContractType, ISingleStudentCvResponse, TypeWork } from '../types';
 import { Recruiter } from './recruiter.entity';
 import { FiltersDto } from '../dto/recruiter.dto';
 import { StudentImport } from '../studentImport/studentImport.entity';
 import { HttpService } from '@nestjs/axios';
-import { count, firstValueFrom, map, tap } from 'rxjs';
 import { v4 as uuid } from 'uuid';
+
 import {
   AvailableStudentToListResponseInterface,
   ForInterviewStudentToListResponseInterface,
@@ -15,19 +15,34 @@ import {
   RecruiterActionsOfStatusEnum,
 } from '../types';
 import { RecruiterToStudent } from './recruiterToStudent.entity';
+import { hashPwd } from '../utils/hash-pwd';
 
-const MAX_PER_PAGE = 2;
+const MAX_PER_PAGE = 5;
 
 @Injectable()
 export class RecruiterService {
   constructor(
+    private readonly httpService: HttpService,
     @Inject(forwardRef(() => DataSource)) private dataSource: DataSource,
   ) {}
 
   async getAllStudents(
+    recruiterId: string,
     currentPage = 1,
   ): Promise<IAvailableStudentToListResponse> {
     const maxPerPage = MAX_PER_PAGE;
+
+    const recruiterToStudent = await RecruiterToStudent.find({
+      where: {
+        recruiterId,
+      },
+    });
+
+    const studentsInTalkForRecruiter: string[] = recruiterToStudent.map(
+      (studentId) => {
+        return studentId.studentImportId;
+      },
+    );
 
     const [items, count] = await Student.findAndCount({
       relations: {
@@ -55,6 +70,7 @@ export class RecruiterService {
       where: {
         status: UserStatus.active,
         studentImport: {
+          id: Not(In(studentsInTalkForRecruiter)),
           isActive: true,
         },
       },
@@ -136,8 +152,10 @@ export class RecruiterService {
 
         let recruiterToStudent = await RecruiterToStudent.findOne({
           where: {
+            // recruiterId,
+            // studentImportId: foundStudent.id,
             recruiterId,
-            studentImportId: foundStudent.id,
+            studentImportId: foundStudentImport.id,
           },
         });
         if (!recruiterToStudent) {
@@ -173,6 +191,9 @@ export class RecruiterService {
       case `${RecruiterActionsOfStatusEnum.employed}`: {
         foundStudent.status = UserStatus.employed;
         foundStudentImport.isActive = false;
+        await foundStudent.save();
+        await foundStudentImport.save();
+        console.log(foundStudent);
         const recruiterToStudentToDelete = await RecruiterToStudent.findOne({
           where: {
             recruiterId,
@@ -195,13 +216,6 @@ export class RecruiterService {
   }
 
   async getForInterviewStudents(recruiterId: string) {
-    // const students = await this.dataSource
-    //   .getRepository(Student)
-    //   .createQueryBuilder('student')
-    //   .leftJoinAndSelect('student.studentImport', 'studentImport')
-    //   .where('student.status = :status', { status: UserStatus.duringTalk })
-    //   .getMany();
-
     const recruiter = await Recruiter.findOne({
       where: {
         id: recruiterId,
@@ -214,7 +228,6 @@ export class RecruiterService {
           recruiterId: recruiter.id,
         },
       });
-      console.log('zczytał recruiter');
       if (studentsImportIds) {
         const students = await Promise.all(
           studentsImportIds.map(async (studentId) => {
@@ -240,7 +253,6 @@ export class RecruiterService {
             }
           }),
         );
-        console.log('zczytał studentsids');
         const dataToResponse: ForInterviewStudentToListResponseInterface[] = [];
 
         for (const student of students) {
@@ -261,7 +273,6 @@ export class RecruiterService {
             canTakeApprenticeship: student.canTakeApprenticeship,
             endOfReservation: student.endOfReservation,
           };
-          console.log({ studentInfo });
           dataToResponse.push(studentInfo);
         }
         return dataToResponse;
@@ -273,42 +284,75 @@ export class RecruiterService {
     }
   }
 
-  async getOneStudentCv(id: string): Promise<ISingleStudentCvResponse> {
-    const oneStudent = await this.dataSource
-      .getRepository(Student)
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.studentImport', 'studentImport')
-      .where('studentImport.id = :id', { id })
-      .getOne();
+  async getOneStudentCv(
+    recruiterId: string,
+    id: string,
+  ): Promise<ISingleStudentCvResponse> {
+    try {
+      // const isStudentForInterview = await RecruiterToStudent.findOne({
+      //   where: { recruiterId: recruiterId, studentImportId: id },
+      // });
+      //
+      // if (!isStudentForInterview) {
+      //   throw new Error('Brak dostępu lub błędne dane');
+      // }
 
-    return {
-      firstName: oneStudent.firstName,
-      lastName: oneStudent.lastName,
-      bio: oneStudent.bio,
-      githubUsername: oneStudent.githubUsername,
-      courseCompletion: oneStudent.studentImport.courseCompletion,
-      courseEngagement: oneStudent.studentImport.courseEngagement,
-      projectDegree: oneStudent.studentImport.projectDegree,
-      teamProjectDegree: oneStudent.studentImport.projectDegree,
-      bonusProjectUrls: JSON.parse(oneStudent.studentImport.bonusProjectsUrls),
-      projectUrls: JSON.parse(oneStudent.projectUrls),
-      portfolioUrls: JSON.parse(oneStudent.portfolioUrls),
-      expectedTypeWork: oneStudent.expectedTypeWork,
-      expectedContractType: oneStudent.expectedContractType,
-      targetWorkCity: oneStudent.targetWorkCity,
-      expectedSalary: oneStudent.expectedSalary,
-      canTakeApprenticeship: oneStudent.canTakeApprenticeship,
-      monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
-      education: oneStudent.education,
-      workExperience: oneStudent.workExperience,
-      courses: oneStudent.courses,
-      email: oneStudent.studentImport.email,
-      telephone: oneStudent.telephone,
-    };
+      const oneStudent = await this.dataSource
+        .getRepository(Student)
+        .createQueryBuilder('student')
+        .leftJoinAndSelect('student.studentImport', 'studentImport')
+        .where('studentImport.id = :id', { id })
+        .getOne();
+
+      return {
+        firstName: oneStudent.firstName,
+        lastName: oneStudent.lastName,
+        bio: oneStudent.bio,
+        githubUsername: oneStudent.githubUsername,
+        courseCompletion: oneStudent.studentImport.courseCompletion,
+        courseEngagement: oneStudent.studentImport.courseEngagement,
+        projectDegree: oneStudent.studentImport.projectDegree,
+        teamProjectDegree: oneStudent.studentImport.teamProjectDegree,
+        bonusProjectUrls: JSON.parse(
+          oneStudent.studentImport.bonusProjectsUrls,
+        ),
+        projectUrls: JSON.parse(oneStudent.projectUrls),
+        portfolioUrls: JSON.parse(oneStudent.portfolioUrls),
+        expectedTypeWork: oneStudent.expectedTypeWork,
+        expectedContractType: oneStudent.expectedContractType,
+        targetWorkCity: oneStudent.targetWorkCity,
+        expectedSalary: oneStudent.expectedSalary,
+        canTakeApprenticeship: oneStudent.canTakeApprenticeship,
+        monthsOfCommercialExp: oneStudent.monthsOfCommercialExp,
+        education: oneStudent.education,
+        workExperience: oneStudent.workExperience,
+        courses: oneStudent.courses,
+        email: oneStudent.studentImport.email,
+        telephone: oneStudent.telephone,
+      };
+    } catch (e) {
+      console.log(e);
+    }
   }
 
-  async getAllWithSearchedPhrase(searchedPhrase: string, numberOfPage: number) {
+  async getAllWithSearchedPhrase(
+    recruiterId: string,
+    searchedPhrase: string,
+    numberOfPage: number,
+  ) {
     const maxPerPage = MAX_PER_PAGE;
+
+    const recruiterToStudent = await RecruiterToStudent.find({
+      where: {
+        recruiterId,
+      },
+    });
+
+    const studentsInTalkForRecruiter: string[] = recruiterToStudent.map(
+      (studentId) => {
+        return studentId.studentImportId;
+      },
+    );
 
     const [items, count] = await Student.findAndCount({
       relations: {
@@ -337,6 +381,7 @@ export class RecruiterService {
         status: UserStatus.active,
         targetWorkCity: searchedPhrase,
         studentImport: {
+          id: Not(In(studentsInTalkForRecruiter)),
           isActive: true,
         },
       },
@@ -598,11 +643,53 @@ export class RecruiterService {
       })
       .getMany();
 
-      const count = data.length
+    const count = data.length;
     // const totalPages = Math.ceil(count / maxPerPage);
     // return { count, items, totalPages };
     console.log(availableStudents);
     const totalPages = Math.ceil(count / maxPerPage);
     return { count, availableStudents, totalPages };
+  }
+
+  async setRecruiterPassword(
+    recruiterId: string,
+    recruiterToken: string,
+    password: { password: string },
+  ) {
+    const recruiter = await Recruiter.findOneOrFail({
+      where: {
+        id: recruiterId,
+        registerToken: recruiterToken,
+      },
+    });
+
+    recruiter.pwdHash = hashPwd(password.password);
+    recruiter.registerToken = null;
+    recruiter.isActive = true;
+    await recruiter.save();
+
+    return { success: true };
+  }
+
+  async getDataOfLoggedRecruiter(recruiterId: string) {
+    const recruiter = await Recruiter.findOneOrFail({
+      where: {
+        id: recruiterId,
+        isActive: true,
+      },
+    });
+
+    const { id, fullName } = recruiter;
+
+    const recruitersStudents = await RecruiterToStudent.findBy({
+      recruiterId: id,
+    });
+
+    const studentsReserved = recruitersStudents.map((item) => ({
+      studentId: item.studentImportId,
+      endOfReservation: item.endOfReservation,
+    }));
+
+    return { id, fullName, studentsReserved };
   }
 }

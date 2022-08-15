@@ -93,14 +93,27 @@ export class StudentService {
       student.firstName = createStudentDto.firstName;
       student.lastName = createStudentDto.lastName;
       student.githubUsername = createStudentDto.githubUsername;
-      student.projectUrls = createStudentDto.projectUrls;
+      student.projectUrls = JSON.stringify(createStudentDto.projectUrls);
       student.expectedTypeWork = createStudentDto.expectedTypeWork;
       student.expectedContractType = createStudentDto.expectedContractType;
       student.canTakeApprenticeship = createStudentDto.canTakeApprenticeship;
       student.monthsOfCommercialExp = createStudentDto.monthsOfCommercialExp;
       student.studentImport.isActive = true;
       student.studentImport.registerToken = null;
+      student.bio = createStudentDto.bio;
+      student.targetWorkCity = createStudentDto.targetWorkCity;
+      student.portfolioUrls = JSON.stringify(createStudentDto.portfolioUrls);
+      student.expectedSalary = createStudentDto.expectedSalary;
+      student.education = createStudentDto.education;
+      student.workExperience = createStudentDto.workExperience;
+      student.courses = createStudentDto.courses;
+      student.telephone = createStudentDto.telephone;
       await student.save();
+
+      oneStudent.isActive = true;
+      oneStudent.registerToken = null;
+      await oneStudent.save();
+
       return {
         success: true,
       };
@@ -110,19 +123,21 @@ export class StudentService {
   }
 
   async patchStudent(id: string, updateStudentDto: UpdateStudentDto) {
-    const student = await Student.findOneOrFail({
+    const student = await Student.findOne({
       where: {
-        id,
+        studentImport: {
+          id,
+        },
       },
     });
     if (student) {
-      const studentImport = await StudentImport.findOneOrFail({
+      const studentImport = await StudentImport.findOne({
         where: {
-          id: student.studentImport.id,
+          id,
         },
       });
       if (studentImport) {
-        const checkIfEmailAlreadyExist = await StudentImport.findOneOrFail({
+        const checkIfEmailAlreadyExist = await StudentImport.findOne({
           where: {
             id: Not(studentImport.id),
             email: updateStudentDto.email,
@@ -131,6 +146,7 @@ export class StudentService {
         if (checkIfEmailAlreadyExist) {
           throw new Error('You can not use this email address');
         }
+        student.studentImport = studentImport;
         student.studentImport.email =
           updateStudentDto.email ?? student.studentImport.email;
         student.firstName = updateStudentDto.firstName ?? student.firstName;
@@ -161,6 +177,8 @@ export class StudentService {
         student.workExperience =
           updateStudentDto.workExperience ?? student.workExperience;
         student.courses = updateStudentDto.courses ?? student.courses;
+        await student.save();
+        await studentImport.save();
         return {
           success: true,
         };

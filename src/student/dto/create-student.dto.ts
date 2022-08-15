@@ -1,8 +1,10 @@
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
   MaxLength,
@@ -31,8 +33,8 @@ export class CreateStudentDto {
   @MaxLength(39)
   githubUsername: string;
   @IsNotEmpty()
-  @IsString()
-  projectUrls: string;
+  @IsArray()
+  projectUrls: string[];
   @IsNotEmpty()
   @IsEnum(TypeWork)
   expectedTypeWork: TypeWork;
@@ -45,4 +47,36 @@ export class CreateStudentDto {
   @IsNotEmpty()
   @IsNumber()
   monthsOfCommercialExp: number;
+
+  @IsString()
+  @IsOptional()
+  telephone: string;
+
+  @IsArray()
+  @IsOptional()
+  portfolioUrls: string[];
+
+  @IsString()
+  @IsOptional()
+  bio: string;
+
+  @IsString()
+  @IsOptional()
+  targetWorkCity: string;
+
+  @IsNumber()
+  @IsOptional()
+  expectedSalary: number;
+
+  @IsString()
+  @IsOptional()
+  education: string;
+
+  @IsString()
+  @IsOptional()
+  workExperience: string;
+
+  @IsString()
+  @IsOptional()
+  courses: string;
 }
