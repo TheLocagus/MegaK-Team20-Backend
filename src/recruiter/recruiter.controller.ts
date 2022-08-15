@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { RecruiterService } from './recruiter.service';
 import { FiltersDto } from '../dto/recruiter.dto';
@@ -8,6 +16,9 @@ import {
   ISingleStudentCvResponse,
   RecruiterActionsOfStatusEnum,
 } from '../types';
+import { AuthGuard } from '@nestjs/passport';
+import { UserObj } from '../decorators/user-obj.decorator';
+import { Recruiter } from './recruiter.entity';
 
 export interface StatusResponse {
   status: RecruiterActionsOfStatusEnum;
@@ -17,24 +28,27 @@ export interface StatusResponse {
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 
-  @Get('/all/:recruiterId/:pageNumber')
+  @Get('/all/:pageNumber?')
+  @UseGuards(AuthGuard('recruiter'))
   getAllStudents(
-    @Param('recruiterId') recruiterId: string,
+    @UserObj() recruiter: Recruiter,
     @Param('pageNumber')
     pageNumber: string,
   ): Promise<IAvailableStudentToListResponse> {
     return this.recruiterService.getAllStudents(
-      recruiterId,
+      recruiter.id,
       Number(pageNumber),
     );
   }
 
-  @Get('/:recruiterId/for-interview')
-  getForInterviewStudents(@Param('recruiterId') recruiterId: string) {
-    return this.recruiterService.getForInterviewStudents(recruiterId);
+  @Get('/for-interview')
+  @UseGuards(AuthGuard('recruiter'))
+  getForInterviewStudents(@UserObj() recruiter: Recruiter) {
+    return this.recruiterService.getForInterviewStudents(recruiter.id);
   }
 
   @Post('/:numberOfPage/filter')
+  @UseGuards(AuthGuard('recruiter'))
   filterListWithAllStudents(
     @Body() filters: FiltersDto,
     @Param('numberOfPage') numberOfPage: number,
@@ -45,13 +59,14 @@ export class RecruiterController {
     );
   }
 
-  @Get('/:recruiterId/cv/:id')
+  @Get('/cv/:id')
+  @UseGuards(AuthGuard('recruiter'))
   getOneStudentCv(
-    @Param('recruiterId') recruiterId: string,
+    @UserObj() recruiter: Recruiter,
     @Param('id')
     id: string,
   ): Promise<ISingleStudentCvResponse> {
-    return this.recruiterService.getOneStudentCv(recruiterId, id);
+    return this.recruiterService.getOneStudentCv(recruiter.id, id);
   }
 
   @Get('/register/:id/:registerToken')
@@ -67,37 +82,39 @@ export class RecruiterController {
     );
   }
 
-  @Get('/:recruiterId/data')
-  getDataOfLoggedRecruiter(@Param('recruiterId') recruiterId: string) {
-    return this.recruiterService.getDataOfLoggedRecruiter(recruiterId);
+  @Get('/data')
+  @UseGuards(AuthGuard('recruiter'))
+  getDataOfLoggedRecruiter(@UserObj() recruiter: Recruiter) {
+    return this.recruiterService.getDataOfLoggedRecruiter(recruiter.id);
   }
 
-  @Patch('/status/:recruiterId/:studentId')
+  @Patch('/status/:studentId')
+  @UseGuards(AuthGuard('recruiter'))
   changeStatus(
     @Param('studentId')
     studentId: string,
-    @Param('recruiterId')
-    recruiterId: string,
+    @UserObj() recruiter: Recruiter,
     @Body()
     status: StatusResponse,
   ) {
     return this.recruiterService.changeStatus(
       studentId,
-      recruiterId,
+      recruiter.id,
       status.status,
     );
   }
 
-  @Get('/:recruiterId/:numberOfPage/:searchedPhrase')
+  @Get('/:numberOfPage/:searchedPhrase')
+  @UseGuards(AuthGuard('recruiter'))
   getAllWithSearchedPhrase(
-    @Param('recruiterId') recruiterId: string,
+    @UserObj() recruiter: Recruiter,
     @Param('searchedPhrase')
     searchedPhrase: string,
     @Param('numberOfPage')
     numberOfPage: number,
   ) {
     return this.recruiterService.getAllWithSearchedPhrase(
-      recruiterId,
+      recruiter.id,
       searchedPhrase,
       numberOfPage,
     );
