@@ -1,90 +1,82 @@
 [
   {
-    "email": "louisebaker@vantage.com",
+    "email": "bartek_kolsut1@wp.pl",
+    "courseCompletion": 3,
+    "courseEngagment": 4,
+    "projectDegree": 1,
+    "teamProjectDegree": 2,
+    "bonusProjectUrls": "[\"test4\", \"test5\", \"test6\"]"
+  },
+  {
+    "email": "locagus@o2.pl",
     "courseCompletion": 5,
     "courseEngagment": 5,
     "projectDegree": 5,
-    "teamProjectDegree": 5,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+    "teamProjectDegree": 4,
+    "bonusProjectUrls": "[\"www.github.com\", \"www.youtube.com\"]"
   },
   {
-    "email": "greenorr@iplax.com",
-    "courseCompletion": 2,
-    "courseEngagment": 2,
-    "projectDegree": 3,
-    "teamProjectDegree": 3,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
-  },
-  {
-    "email": "dickersonhughes@nixelt.com",
-    "courseCompletion": 1,
-    "courseEngagment": 1,
-    "projectDegree": 5,
-    "teamProjectDegree": 1,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
-  },
-  {
-    "email": "sharpevazquez@miraclis.com",
-    "courseCompletion": 1,
-    "courseEngagment": 4,
-    "projectDegree": 3,
-    "teamProjectDegree": 5,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
-  },
-  {
-    "email": "irmaallison@eargo.com",
-    "courseCompletion": 1,
-    "courseEngagment": 3,
-    "projectDegree": 2,
-    "teamProjectDegree": 5,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
-  },
-  {
-    "email": "summershamilton@syntac.com",
+    "email": "test@wp.pl",
     "courseCompletion": 1,
     "courseEngagment": 2,
-    "projectDegree": 2,
-    "teamProjectDegree": 2,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+    "projectDegree": 3,
+    "teamProjectDegree": 4,
+    "bonusProjectUrls": "[\"www.front.com\", \"www.back.com\"]"
   },
   {
-    "email": "jodikaufman@norsup.com",
-    "courseCompletion": 2,
-    "courseEngagment": 3,
-    "projectDegree": 5,
-    "teamProjectDegree": 1,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+    "email": "rasengan@o2.pl",
+    "courseCompletion": 1,
+    "courseEngagment": 2,
+    "projectDegree": 3,
+    "teamProjectDegree": 4,
+    "bonusProjectUrls": "[\"www.frontiback.com\"]"
   },
   {
-    "email": "christinegamble@ezent.com",
+    "email": "kagebunshin@o2.pl",
     "courseCompletion": 5,
+    "courseEngagment": 4,
+    "projectDegree": 3,
+    "teamProjectDegree": 2,
+    "bonusProjectUrls": "[]"
+  },
+  {
+    "email": "chidori@o2.pl",
+    "courseCompletion": 1,
     "courseEngagment": 1,
-    "projectDegree": 5,
+    "projectDegree": 1,
     "teamProjectDegree": 1,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+    "bonusProjectUrls": "[\"www.github.com\", \"www.youtube.com\"]"
   },
   {
-    "email": "calderonlowery@exoblue.com",
+    "email": "sharingan@o2.pl",
     "courseCompletion": 2,
-    "courseEngagment": 1,
-    "projectDegree": 5,
+    "courseEngagment": 2,
+    "projectDegree": 2,
     "teamProjectDegree": 2,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+    "bonusProjectUrls": "[\"www.test.com\", \"www.youtube.com\"]"
   },
   {
-    "email": "ernabennett@orbaxter.com",
+    "email": "byakugan@o2.pl",
     "courseCompletion": 3,
-    "courseEngagment": 4,
-    "projectDegree": 1,
-    "teamProjectDegree": 2,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+    "courseEngagment": 3,
+    "projectDegree": 3,
+    "teamProjectDegree": 4,
+    "bonusProjectUrls": "[\"www.githubqq.com\", \"www.youtube22.com\"]"
   },
   {
-    "email": "tesik@orbaxter.com",
-    "courseCompletion": 3,
-    "courseEngagment": 4,
-    "projectDegree": 1,
-    "teamProjectDegree": 2,
-    "bonusProjectUrls": "[\"test1\", \"test2\", \"test3\"]"
+    "email": "amaterasu@o2.pl",
+    "courseCompletion": 1,
+    "courseEngagment": 3,
+    "projectDegree": 2,
+    "teamProjectDegree": 5,
+    "bonusProjectUrls": "[\"www.gitlab.com\", \"www.itube.com\"]"
+  },
+  {
+    "email": "henge@o2.pl",
+    "courseCompletion": 2,
+    "courseEngagment": 3,
+    "projectDegree": 2,
+    "teamProjectDegree": 4,
+    "bonusProjectUrls": "[\"www.link.com\", \"www.vimeo.com\"]"
   }
 ]
