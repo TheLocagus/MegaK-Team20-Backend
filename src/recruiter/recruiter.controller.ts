@@ -24,7 +24,7 @@ export interface StatusResponse {
   status: RecruiterActionsOfStatusEnum;
 }
 
-@Controller('recruiter')
+@Controller('api/recruiter')
 export class RecruiterController {
   constructor(private readonly recruiterService: RecruiterService) {}
 

@@ -14,7 +14,7 @@ import * as path from 'path';
 import { MulterDiskUploadedFiles } from '../interfaces/files';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('admin')
+@Controller('api/admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 

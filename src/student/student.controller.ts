@@ -16,7 +16,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserObj } from '../decorators/user-obj.decorator';
 import { Student } from './student.entity';
 
-@Controller('student')
+@Controller('api/student')
 export class StudentController {
   constructor(@Inject(StudentService) private studentService: StudentService) {}
 
