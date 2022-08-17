@@ -1,6 +1,7 @@
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { configMail } from './configMail';
+
 import { google } from 'googleapis';
+import { configMail } from './config/configMail';
 
 const OAuth2 = google.auth.OAuth2;
 
@@ -33,7 +34,7 @@ export = {
     },
   },
   defaults: {
-    from: 'test@test.com',
+    from: 'hh-team20@megak.com',
   },
   template: {
     dir: './templates/email',
