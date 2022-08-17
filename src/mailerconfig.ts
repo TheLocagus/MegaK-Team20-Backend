@@ -1,5 +1,6 @@
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
+import { configMail } from './config/configMail';
 import { google } from 'googleapis';
 import { configMail } from './config/configMail';
 
