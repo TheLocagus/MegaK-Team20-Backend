@@ -1,5 +1,5 @@
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { configMail } from './configMail';
+import { configMail } from './config/configMail';
 import { google } from 'googleapis';
 
 const OAuth2 = google.auth.OAuth2;

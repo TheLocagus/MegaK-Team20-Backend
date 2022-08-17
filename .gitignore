@@ -38,3 +38,5 @@ lerna-debug.log*
 src/config/config-salt.ts
 src/config/configMail.ts
 ./yarn.lock
+configMail.ts
+config-db.ts
