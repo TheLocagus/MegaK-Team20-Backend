@@ -2,7 +2,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 
 import { configMail } from './config/configMail';
 import { google } from 'googleapis';
-import { configMail } from './config/configMail';
 
 const OAuth2 = google.auth.OAuth2;
 
