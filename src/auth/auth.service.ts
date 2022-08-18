@@ -211,7 +211,9 @@ export class AuthService {
         },
       },
     });
-    student.studentImport = studentImport;
+    if (student !== null && studentImport !== null) {
+      student.studentImport = studentImport;
+    }
     const recruiter = await Recruiter.findOne({
       where: {
         id,
